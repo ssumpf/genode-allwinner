@@ -5,10 +5,17 @@ LIBS     = base a64_lx_emul
 
 INC_DIR  = $(PRG_DIR)
 
+SRC_C += lx_emul/usb.c
 SRC_C += lx_emul/a64/common_dummies.c
+SRC_C += lx_emul/a64/sched.c
+SRC_C += lx_emul/shadow/drivers/clk/clk.c
 SRC_C += $(notdir $(wildcard $(PRG_DIR)/generated_dummies.c))
 
+SRC_CC += main.cc
+SRC_CC += lx_emul/shared_dma_buffer.cc
+
 vpath lx_emul/a64/common_dummies.c $(REP_DIR)/src/lib
+vpath lx_emul/a64/sched.c          $(REP_DIR)/src/lib
 
 #
 # Genode C-API backends
