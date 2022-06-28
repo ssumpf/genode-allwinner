@@ -84,6 +84,7 @@ struct Driver::Ccu : private Attached_mmio
 	Gating_bit _bus_i2s2     { _clocks, "bus-i2s2",     _osc_24m_clk, _regs(),  0x68, 14 };
 	Gating_bit _bus_twi0     { _clocks, "bus-twi0",     _osc_24m_clk, _regs(),  0x6c,  0 };
 	Gating_bit _bus_uart3    { _clocks, "bus-uart3",    _osc_24m_clk, _regs(),  0x6c, 19 };
+	Gating_bit _usb_phy0_gate{ _clocks, "usb-phy0",     _osc_24m_clk, _regs(),  0xcc,  8 };
 	Gating_bit _usb_phy1_gate{ _clocks, "usb-phy1",     _osc_24m_clk, _regs(),  0xcc,  9 };
 	Gating_bit _ohci1_gate   { _clocks, "ohci1",        _osc_24m_clk, _regs(),  0xcc, 17 };
 	Gating_bit _tcon0_gate   { _clocks, "tcon0",        _osc_24m_clk, _regs(), 0x118, 31 };
@@ -191,6 +192,7 @@ struct Driver::Ccu : private Attached_mmio
 		void _assert()   override { write<Bus_soft_rst_reg>(ASSERT,   _bit); }
 	};
 
+	Reset_bit _usb_phy0_rst  { _resets, "usb-phy0", _regs(),  0xcc,  0 };
 	Reset_bit _usb_phy1_rst  { _resets, "usb-phy1", _regs(),  0xcc,  1 };
 	Reset_bit _mipi_dsi_rst  { _resets, "mipi-dsi", _regs(), 0x2c0,  1 };
 	Reset_bit _ehci1_rst     { _resets, "ehci1",    _regs(), 0x2c0,  25 };
