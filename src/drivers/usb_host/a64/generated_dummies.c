@@ -70,22 +70,6 @@ void __put_task_struct(struct task_struct * tsk)
 }
 
 
-#include <linux/interrupt.h>
-
-void __tasklet_hi_schedule(struct tasklet_struct * t)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/interrupt.h>
-
-void __tasklet_schedule(struct tasklet_struct * t)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
 #include <linux/fs.h>
 
 void __unregister_chrdev(unsigned int major,unsigned int baseminor,unsigned int count,const char * name)
@@ -118,22 +102,6 @@ unsigned int _parse_integer_limit(const char * s,unsigned int base,unsigned long
 #include <linux/random.h>
 
 void add_bootloader_randomness(const void * buf,unsigned int size)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/random.h>
-
-void add_device_randomness(const void * buf,unsigned int size)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/random.h>
-
-void add_interrupt_randomness(int irq,int irq_flags)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -239,14 +207,6 @@ bool dma_default_coherent;
 
 #include <linux/dma-mapping.h>
 
-dma_addr_t dma_map_page_attrs(struct device * dev,struct page * page,size_t offset,size_t size,enum dma_data_direction dir,unsigned long attrs)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/dma-mapping.h>
-
 int dma_mmap_attrs(struct device * dev,struct vm_area_struct * vma,void * cpu_addr,dma_addr_t dma_addr,size_t size,unsigned long attrs)
 {
 	lx_emul_trace_and_stop(__func__);
@@ -256,14 +216,6 @@ int dma_mmap_attrs(struct device * dev,struct vm_area_struct * vma,void * cpu_ad
 #include <linux/dmapool.h>
 
 void dma_pool_destroy(struct dma_pool * pool)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/dma-mapping.h>
-
-void dma_unmap_page_attrs(struct device * dev,dma_addr_t addr,size_t size,enum dma_data_direction dir,unsigned long attrs)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -413,14 +365,6 @@ void irq_work_tick(void)
 #include <linux/property.h>
 
 bool is_software_node(const struct fwnode_handle * fwnode)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/mm.h>
-
-bool is_vmalloc_addr(const void * x)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -609,8 +553,6 @@ void note_interrupt(struct irq_desc * desc,irqreturn_t action_ret)
 }
 
 
-#include <linux/clk.h>
-
 #include <linux/serial_core.h>
 
 int __init of_setup_earlycon(const struct earlycon_id * match,unsigned long node,const char * options)
@@ -688,6 +630,30 @@ int printk_deferred(const char * fmt,...)
 #include <linux/pid.h>
 
 void put_pid(struct pid * pid)
+{
+	lx_emul_trace_and_stop(__func__);
+}
+
+
+#include <linux/rcutree.h>
+
+noinstr void rcu_irq_enter(void)
+{
+	lx_emul_trace_and_stop(__func__);
+}
+
+
+#include <linux/rcutree.h>
+
+void noinstr rcu_irq_exit(void)
+{
+	lx_emul_trace_and_stop(__func__);
+}
+
+
+#include <linux/rcutree.h>
+
+void rcu_softirq_qs(void)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -789,6 +755,14 @@ int smp_call_function_single(int cpu,smp_call_func_t func,void * info,int wait)
 }
 
 
+#include <linux/smpboot.h>
+
+int smpboot_register_percpu_thread(struct smp_hotplug_thread * plug_thread)
+{
+	lx_emul_trace_and_stop(__func__);
+}
+
+
 #include <linux/sort.h>
 
 void sort(void * base,size_t num,size_t size,cmp_func_t cmp_func,swap_func_t swap_func)
@@ -805,14 +779,6 @@ bool static_key_initialized;
 #include <linux/string_helpers.h>
 
 int string_escape_mem(const char * src,size_t isz,char * dst,size_t osz,unsigned int flags,const char * only)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/sysfs.h>
-
-int sysfs_create_group(struct kobject * kobj,const struct attribute_group * grp)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -874,14 +840,6 @@ struct callback_head * task_work_cancel(struct task_struct * task,task_work_func
 }
 
 
-#include <linux/interrupt.h>
-
-void tasklet_setup(struct tasklet_struct * t,void (* callback)(struct tasklet_struct *))
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
 #include <linux/clockchips.h>
 
 void tick_broadcast(const struct cpumask * mask)
@@ -920,14 +878,6 @@ void unregister_irq_proc(unsigned int irq,struct irq_desc * desc)
 }
 
 
-#include <linux/nls.h>
-
-int utf16s_to_utf8s(const wchar_t * pwcs,int inlen,enum utf16_endian endian,u8 * s,int maxout)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
 #include <linux/uuid.h>
 
 const u8 uuid_index[16] = {};
@@ -936,6 +886,14 @@ const u8 uuid_index[16] = {};
 #include <linux/sched/wake_q.h>
 
 void wake_q_add_safe(struct wake_q_head * head,struct task_struct * task)
+{
+	lx_emul_trace_and_stop(__func__);
+}
+
+
+#include <linux/wait_bit.h>
+
+void wake_up_var(void * var)
 {
 	lx_emul_trace_and_stop(__func__);
 }

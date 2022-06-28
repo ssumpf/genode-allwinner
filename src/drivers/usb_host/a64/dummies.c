@@ -38,12 +38,32 @@ int sysfs_create_dir_ns(struct kobject * kobj,const void * ns)
 }
 
 
+int sysfs_create_group(struct kobject * kobj,const struct attribute_group * grp)
+{
+	lx_emul_trace(__func__);
+	return 0;
+}
+
+
+
 #include <linux/random.h>
 
 int __must_check get_random_bytes_arch(void * buf,int nbytes)
 {
 	printk("get_random_bytes_arch: leaving buffer unmodified\n");
 	return 0;
+}
+
+
+void add_device_randomness(const void * buf,unsigned int size)
+{
+	lx_emul_trace(__func__);
+}
+
+
+void add_interrupt_randomness(int irq,int irq_flags)
+{
+	lx_emul_trace(__func__);
 }
 
 
@@ -220,6 +240,16 @@ struct regulator * devm_regulator_get_optional(struct device * dev,const char * 
 	lx_emul_trace(__func__);
 	return NULL;
 }
+
+
+#include <linux/mm.h>
+
+bool is_vmalloc_addr(const void * x)
+{
+	lx_emul_trace(__func__);
+	return false;
+}
+
 
 
 

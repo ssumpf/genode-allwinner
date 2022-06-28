@@ -73,9 +73,10 @@ install_config {
 			<route> <any-service> <parent/> </any-service> </route>
 		</start>
 
-		<start name="usb_host_drv">
+		<start name="usb_host_drv" caps="200">
 			<binary name="a64_usb_host_drv"/>
 			<resource name="RAM" quantum="16M"/>
+			<provides> <service name="Usb"/> </provides>
 			<route>
 				<service name="Timer"> <child name="timer"/> </service>
 				<service name="Platform"> <child name="platform_drv"/> </service>
