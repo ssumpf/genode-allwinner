@@ -1,7 +1,7 @@
 /*
  * \brief  Dummy definitions of Linux Kernel functions
  * \author Automatically generated file - do no edit
- * \date   2022-06-24
+ * \date   2022-06-28
  */
 
 #include <lx_emul.h>
@@ -18,30 +18,6 @@ int ___ratelimit(struct ratelimit_state * rs,const char * func)
 #include <linux/clk-provider.h>
 
 const char * __clk_get_name(const struct clk * clk)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <asm-generic/delay.h>
-
-void __const_udelay(unsigned long xloops)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/phy/phy.h>
-
-struct phy_provider * __devm_of_phy_provider_register(struct device * dev,struct device_node * children,struct module * owner,struct phy * (* of_xlate)(struct device * dev,struct of_phandle_args * args))
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/reset.h>
-
-struct reset_control * __devm_reset_control_get(struct device * dev,const char * id,int index,bool shared,bool optional,bool acquired)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -248,73 +224,9 @@ struct timespec64 current_time(struct inode * inode)
 }
 
 
-#include <linux/clk.h>
-
-struct clk * devm_clk_get(struct device * dev,const char * id)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/extcon-provider.h>
-
-struct extcon_dev * devm_extcon_dev_allocate(struct device * dev,const unsigned int * supported_cable)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/extcon-provider.h>
-
-int devm_extcon_dev_register(struct device * dev,struct extcon_dev * edev)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/gpio/consumer.h>
-
-struct gpio_desc * __must_check devm_gpiod_get_optional(struct device * dev,const char * con_id,enum gpiod_flags flags)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/phy/phy.h>
-
-struct phy * devm_of_phy_get_by_index(struct device * dev,struct device_node * np,int index)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/phy/phy.h>
-
-struct phy * devm_phy_create(struct device * dev,struct device_node * node,const struct phy_ops * ops)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
 #include <linux/power_supply.h>
 
 struct power_supply * devm_power_supply_get_by_phandle(struct device * dev,const char * property)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/regulator/consumer.h>
-
-struct regulator * devm_regulator_get_optional(struct device * dev,const char * id)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/reset.h>
-
-struct reset_control * devm_reset_control_array_get(struct device * dev,bool shared,bool optional)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -343,31 +255,7 @@ int dma_mmap_attrs(struct device * dev,struct vm_area_struct * vma,void * cpu_ad
 
 #include <linux/dmapool.h>
 
-void * dma_pool_alloc(struct dma_pool * pool,gfp_t mem_flags,dma_addr_t * handle)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/dmapool.h>
-
-struct dma_pool * dma_pool_create(const char * name,struct device * dev,size_t size,size_t align,size_t boundary)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/dmapool.h>
-
 void dma_pool_destroy(struct dma_pool * pool)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/dmapool.h>
-
-void dma_pool_free(struct dma_pool * pool,void * vaddr,dma_addr_t dma)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -445,14 +333,6 @@ void get_random_bytes(void * buf,int nbytes)
 #include <linux/gpio/consumer.h>
 
 int gpiod_get_value_cansleep(const struct gpio_desc * desc)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/gpio/consumer.h>
-
-int gpiod_to_irq(const struct gpio_desc * desc)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -549,14 +429,6 @@ bool is_vmalloc_addr(const void * x)
 #include <linux/kobject.h>
 
 struct kobject *kernel_kobj;
-
-
-#include <linux/kernfs.h>
-
-struct kernfs_node * kernfs_find_and_get_ns(struct kernfs_node * parent,const char * name,const void * ns)
-{
-	lx_emul_trace_and_stop(__func__);
-}
 
 
 #include <linux/sched/signal.h>
@@ -739,20 +611,6 @@ void note_interrupt(struct irq_desc * desc,irqreturn_t action_ret)
 
 #include <linux/clk.h>
 
-struct clk * of_clk_get(struct device_node * np,int index)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/clk/clk-conf.h>
-
-int of_clk_set_defaults(struct device_node * node,bool clk_supplier)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
 #include <linux/serial_core.h>
 
 int __init of_setup_earlycon(const struct earlycon_id * match,unsigned long node,const char * options)
@@ -785,38 +643,6 @@ void panic(const char * fmt,...)
 }
 
 
-#include <linux/phy/phy.h>
-
-int phy_calibrate(struct phy * phy)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/phy/phy.h>
-
-int phy_power_off(struct phy * phy)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/phy/phy.h>
-
-int phy_power_on(struct phy * phy)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/phy/phy.h>
-
-int phy_set_mode_ext(struct phy * phy,enum phy_mode mode,int submode)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
 #include <linux/initrd.h>
 
 unsigned long phys_initrd_size;
@@ -825,22 +651,6 @@ unsigned long phys_initrd_size;
 #include <linux/initrd.h>
 
 phys_addr_t phys_initrd_start;
-
-
-#include <linux/pinctrl/devinfo.h>
-
-int pinctrl_bind_pins(struct device * dev)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/pinctrl/devinfo.h>
-
-int pinctrl_init_done(struct device * dev)
-{
-	lx_emul_trace_and_stop(__func__);
-}
 
 
 #include <linux/power_supply.h>
@@ -899,6 +709,14 @@ int regulator_enable(struct regulator * regulator)
 }
 
 
+#include <linux/regulator/consumer.h>
+
+void regulator_put(struct regulator * regulator)
+{
+	lx_emul_trace_and_stop(__func__);
+}
+
+
 #include <linux/ioport.h>
 
 int release_resource(struct resource * old)
@@ -918,14 +736,6 @@ int remap_pfn_range(struct vm_area_struct * vma,unsigned long addr,unsigned long
 #include <linux/reset.h>
 
 int reset_control_assert(struct reset_control * rstc)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/reset.h>
-
-int reset_control_deassert(struct reset_control * rstc)
 {
 	lx_emul_trace_and_stop(__func__);
 }

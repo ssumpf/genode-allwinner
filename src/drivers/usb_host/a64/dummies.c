@@ -5,6 +5,7 @@ DEFINE_PER_CPU(unsigned long, net_rand_noise);
 EXPORT_PER_CPU_SYMBOL(net_rand_noise);
 
 
+#if 0
 #include <linux/phy/phy.h>
 
 int phy_exit(struct phy *phy)
@@ -17,7 +18,7 @@ int phy_init(struct phy *phy)
 {
 	lx_emul_trace_and_stop(__func__);
 }
-
+#endif
 
 #include <linux/cpumask.h>
 
@@ -83,6 +84,15 @@ void cdev_del(struct cdev * p)
 }
 
 
+#include <linux/kernfs.h>
+
+struct kernfs_node * kernfs_find_and_get_ns(struct kernfs_node * parent,const char * name,const void * ns)
+{
+	lx_emul_trace(__func__);
+	return NULL;
+}
+
+
 #include <linux/proc_fs.h>
 
 struct proc_dir_entry { int dummy; };
@@ -93,6 +103,125 @@ struct proc_dir_entry * proc_create_seq_private(const char * name,umode_t mode,s
 	lx_emul_trace(__func__);
 	return &ret;
 }
+
+
+#include <linux/pinctrl/devinfo.h>
+
+int pinctrl_bind_pins(struct device * dev)
+{
+	lx_emul_trace(__func__);
+	return 0;
+}
+
+
+int pinctrl_init_done(struct device * dev)
+{
+	lx_emul_trace(__func__);
+	return 0;
+}
+
+
+
+
+#include <linux/clk/clk-conf.h>
+
+int of_clk_set_defaults(struct device_node * node,bool clk_supplier)
+{
+	printk("%s CALLED\n", __func__);
+	return 0;
+}
+
+
+#include <linux/clk.h>
+
+struct clk * of_clk_get(struct device_node * np,int index)
+{
+	printk("%s CALLED index: %d\n", __func__, index);
+	return NULL;
+}
+
+
+
+struct clk * devm_clk_get(struct device * dev,const char * id)
+{
+	printk("%s CALLED: clk: %s\n", __func__, id);
+	return NULL;
+}
+
+
+#include <linux/reset.h>
+
+struct reset_control * __devm_reset_control_get(struct device * dev,const char * id,int index,bool shared,bool optional,bool acquired)
+{
+	printk("%s CALLED: reset: %s\n", __func__, id);
+	return NULL;
+}
+
+
+struct reset_control * devm_reset_control_array_get(struct device * dev,bool shared,bool optional)
+{
+	printk("%s CALLED\n", __func__);
+	return NULL;
+}
+
+
+int reset_control_deassert(struct reset_control * rstc)
+{
+	printk("%s CALLED\n", __func__);
+	return 0;
+}
+
+
+#include <linux/gpio/consumer.h>
+
+struct gpio_desc * __must_check devm_gpiod_get_optional(struct device * dev,const char * con_id,enum gpiod_flags flags)
+{
+	lx_emul_trace(__func__);
+	return NULL;
+}
+
+
+int gpiod_to_irq(const struct gpio_desc * desc)
+{
+	lx_emul_trace(__func__);
+	return 0;
+}
+
+
+#include <linux/regulator/consumer.h>
+
+struct regulator * regulator_get_optional(struct device * dev,const char * id)
+{
+	lx_emul_trace(__func__);
+	return NULL;
+}
+
+
+#include <linux/extcon-provider.h>
+
+struct extcon_dev * devm_extcon_dev_allocate(struct device * dev,const unsigned int * supported_cable)
+{
+	lx_emul_trace(__func__);
+	return NULL;
+}
+
+
+int devm_extcon_dev_register(struct device * dev,struct extcon_dev * edev)
+{
+	lx_emul_trace(__func__);
+	return 0;
+}
+
+
+#include <linux/regulator/consumer.h>
+
+struct regulator * devm_regulator_get_optional(struct device * dev,const char * id)
+{
+	lx_emul_trace(__func__);
+	return NULL;
+}
+
+
 
 
 

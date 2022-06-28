@@ -43,17 +43,31 @@ install_config {
 					<irq number="77"/> <!-- Port L -->
 				</device>
 
+				<device name="usb_phy">
+					<io_mem address="0x01c19400" size="0x14"/>
+					<io_mem address="0x01c1a800" size="0x4"/>
+					<io_mem address="0x01c1b800" size="0x4"/>
+					<clock name="usb-phy1"/>
+					<reset-domain name="usb-phy1"/>
+				</device>
+
 				<device name="ehci1">
 					<io_mem address="0x01c1b000" size="0x100"/>
 					<irq number="106"/>
+					<clock name="bus-ohci1"/>
+					<clock name="bus-ehci1"/>
+					<clock name="ohci1"/>
+					<reset-domain name="ehci1"/>
+					<reset-domain name="ohci1"/>
 				</device>
 
 				<policy label="a64_pio_drv -> ">
 					<device name="pio"/>
 				</policy>
 
-				<policy label="usb_host_drv -> ">
+				<policy label="usb_host_drv -> " info="yes">
 					<device name="ehci1"/>
+					<device name="usb_phy"/>
 				</policy>
 			</config>
 			<route> <any-service> <parent/> </any-service> </route>
@@ -65,6 +79,9 @@ install_config {
 			<route>
 				<service name="Timer"> <child name="timer"/> </service>
 				<service name="Platform"> <child name="platform_drv"/> </service>
+				<service name="ROM" label="dtb">
+					<parent label="usb-pine_a64lts.dtb"/> </service>
+
 				<any-service> <parent/> </any-service>
 			</route>
 		</start>
@@ -73,6 +90,7 @@ install_config {
 }
 
 build_boot_image { core ld.lib.so init timer
-                   a64_platform_drv a64_usb_host_drv }
+                   a64_platform_drv a64_usb_host_drv
+                   usb-pine_a64lts.dtb }
 
 run_genode_until forever

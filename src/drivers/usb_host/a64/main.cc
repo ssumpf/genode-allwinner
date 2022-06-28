@@ -29,6 +29,7 @@ using namespace Genode;
 struct Main : private Entrypoint::Io_progress_handler
 {
 	Env                  & env;
+	Attached_rom_dataspace dtb_rom        { env, "dtb"           };
 	Signal_handler<Main>   signal_handler { env.ep(), *this,
 	                                        &Main::handle_signal };
 	Sliced_heap            sliced_heap    { env.ram(), env.rm()  };
@@ -62,7 +63,7 @@ struct Main : private Entrypoint::Io_progress_handler
 		                genode_signal_handler_ptr(signal_handler),
 		                &lx_emul_usb_rpc_callbacks);
 
-		lx_emul_start_kernel(nullptr);
+		lx_emul_start_kernel(dtb_rom.local_addr<void>());
 
 		env.ep().register_io_progress_handler(*this);
 	}

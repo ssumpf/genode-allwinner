@@ -12,6 +12,7 @@ SRC_C += lx_emul/shadow/drivers/clk/clk.c
 SRC_C += $(notdir $(wildcard $(PRG_DIR)/generated_dummies.c))
 
 SRC_CC += main.cc
+SRC_CC += time.cc
 SRC_CC += lx_emul/shared_dma_buffer.cc
 
 vpath lx_emul/a64/common_dummies.c $(REP_DIR)/src/lib
@@ -27,5 +28,5 @@ vpath genode_c_api/usb.cc $(subst /genode_c_api,,$(call select_from_repositories
 
 BOARDS := pine_a64lts pinephone
 
-DTS_EXTRACT(pine_a64lts)  := --select ehci0 --select ehci1
+DTS_EXTRACT(pine_a64lts)  := --select ehci1
 DTS_EXTRACT(pinephone)    := --select ehci1

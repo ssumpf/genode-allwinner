@@ -27,6 +27,7 @@ drivers/of/of_reserved_mem.c
 drivers/of/platform.c
 drivers/of/property.c
 drivers/irqchip/irqchip.c
+drivers/phy/phy-core.c
 drivers/phy/allwinner/phy-sun4i-usb.c
 drivers/usb/common/common.c
 drivers/usb/core/buffer.c
