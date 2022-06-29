@@ -5,21 +5,6 @@ DEFINE_PER_CPU(unsigned long, net_rand_noise);
 EXPORT_PER_CPU_SYMBOL(net_rand_noise);
 
 
-#if 0
-#include <linux/phy/phy.h>
-
-int phy_exit(struct phy *phy)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-int phy_init(struct phy *phy)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-#endif
-
 #include <linux/cpumask.h>
 
 unsigned int cpumask_next(int n,const struct cpumask * srcp)
@@ -44,6 +29,11 @@ int sysfs_create_group(struct kobject * kobj,const struct attribute_group * grp)
 	return 0;
 }
 
+
+void sysfs_remove_bin_file(struct kobject * kobj,const struct bin_attribute * attr)
+{
+	lx_emul_trace(__func__);
+}
 
 
 #include <linux/random.h>
@@ -249,6 +239,40 @@ bool is_vmalloc_addr(const void * x)
 	lx_emul_trace(__func__);
 	return false;
 }
+
+
+#include <linux/rcutree.h>
+
+void rcu_softirq_qs(void)
+{
+	lx_emul_trace(__func__);
+}
+
+
+noinstr void rcu_irq_enter(void)
+{
+	lx_emul_trace(__func__);
+}
+
+
+void noinstr rcu_irq_exit(void)
+{
+	lx_emul_trace(__func__);
+}
+
+
+
+
+
+#include <linux/wait_bit.h>
+
+void wake_up_var(void * var)
+{
+	lx_emul_trace(__func__);
+}
+
+
+
 
 
 

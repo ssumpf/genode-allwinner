@@ -81,6 +81,8 @@ kernel/time/timecounter.c
 kernel/time/timekeeping.c
 kernel/time/timer.c
 kernel/time/timer_list.c
+kernel/smpboot.c
+kernel/softirq.c
 kernel/workqueue.c
 lib/bitmap.c
 lib/crc32.c

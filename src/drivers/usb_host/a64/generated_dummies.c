@@ -635,30 +635,6 @@ void put_pid(struct pid * pid)
 }
 
 
-#include <linux/rcutree.h>
-
-noinstr void rcu_irq_enter(void)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/rcutree.h>
-
-void noinstr rcu_irq_exit(void)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/rcutree.h>
-
-void rcu_softirq_qs(void)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
 #include <linux/regulator/consumer.h>
 
 int regulator_disable(struct regulator * regulator)
@@ -754,13 +730,14 @@ int smp_call_function_single(int cpu,smp_call_func_t func,void * info,int wait)
 	lx_emul_trace_and_stop(__func__);
 }
 
-
+#if 0
 #include <linux/smpboot.h>
 
 int smpboot_register_percpu_thread(struct smp_hotplug_thread * plug_thread)
 {
 	lx_emul_trace_and_stop(__func__);
 }
+#endif
 
 
 #include <linux/sort.h>
@@ -803,14 +780,6 @@ int sysfs_emit_at(char * buf,int at,const char * fmt,...)
 #include <linux/sysfs.h>
 
 void sysfs_notify(struct kobject * kobj,const char * dir,const char * attr)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-
-
-#include <linux/sysfs.h>
-
-void sysfs_remove_bin_file(struct kobject * kobj,const struct bin_attribute * attr)
 {
 	lx_emul_trace_and_stop(__func__);
 }
@@ -890,11 +859,4 @@ void wake_q_add_safe(struct wake_q_head * head,struct task_struct * task)
 	lx_emul_trace_and_stop(__func__);
 }
 
-
-#include <linux/wait_bit.h>
-
-void wake_up_var(void * var)
-{
-	lx_emul_trace_and_stop(__func__);
-}
 
