@@ -22,8 +22,8 @@ vpath lx_emul/a64/sched.c          $(REP_DIR)/src/lib
 #
 
 SRC_CC  += genode_c_api/usb.cc
-
-vpath genode_c_api/usb.cc $(subst /genode_c_api,,$(call select_from_repositories,src/lib/genode_c_api))
+GENODE_C_API_SRC_DIR := $(call select_from_repositories,src/lib/genode_c_api)
+vpath % $(dir $(GENODE_C_API_SRC_DIR))
 
 BOARDS := pine_a64lts pinephone
 
