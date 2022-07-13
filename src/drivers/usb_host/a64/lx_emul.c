@@ -12,6 +12,7 @@
  */
 
 #include <lx_emul.h>
+#include <time.h>
 #include <linux/slab.h>
 
 
@@ -88,4 +89,3 @@ void dma_pool_free(struct dma_pool * pool,void * vaddr,dma_addr_t dma)
 {
 	lx_emul_mem_free(vaddr);
 }
-

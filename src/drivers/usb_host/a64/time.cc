@@ -13,13 +13,19 @@
 
 #include <base/log.h>
 #include <lx_kit/env.h>
+#include <time.h>
 
-extern "C" void lx_emul_time_udelay(unsigned long usec);
-extern "C" void lx_emul_time_udelay(unsigned long usec)
+
+void lx_emul_time_udelay(unsigned long usec)
 {
 	if (usec > 100)
 		Genode::error("Cannot delay that long ", usec, " microseconds");
 
-	unsigned long start = Lx_kit::env().timer.curr_time().trunc_to_plain_us().value;
-	while (Lx_kit::env().timer.curr_time().trunc_to_plain_us().value < (start + usec)) { ; }
+	auto curr_usec = [&]
+	{
+		return Lx_kit::env().timer.curr_time().trunc_to_plain_us().value;
+	};
+
+	unsigned long const start = curr_usec();
+	while (curr_usec() < start + usec) { }
 }

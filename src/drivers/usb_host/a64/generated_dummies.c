@@ -1,7 +1,7 @@
 /*
  * \brief  Dummy definitions of Linux Kernel functions
  * \author Automatically generated file - do no edit
- * \date   2022-06-28
+ * \date   2022-07-13
  */
 
 #include <lx_emul.h>
@@ -730,15 +730,6 @@ int smp_call_function_single(int cpu,smp_call_func_t func,void * info,int wait)
 	lx_emul_trace_and_stop(__func__);
 }
 
-#if 0
-#include <linux/smpboot.h>
-
-int smpboot_register_percpu_thread(struct smp_hotplug_thread * plug_thread)
-{
-	lx_emul_trace_and_stop(__func__);
-}
-#endif
-
 
 #include <linux/sort.h>
 
@@ -858,5 +849,3 @@ void wake_q_add_safe(struct wake_q_head * head,struct task_struct * task)
 {
 	lx_emul_trace_and_stop(__func__);
 }
-
-

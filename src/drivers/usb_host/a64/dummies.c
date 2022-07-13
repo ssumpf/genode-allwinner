@@ -1,3 +1,15 @@
+/*
+ * \brief  Dummy definitions of Linux Kernel functions
+ * \author Sebastian Sumpf
+ * \date   2022-07-13
+ */
+
+/*
+ * Copyright (C) 2021 Genode Labs GmbH
+ *
+ * This file is distributed under the terms of the GNU General Public License
+ * version 2.
+ */
 
 #include <linux/prandom.h>
 
@@ -55,6 +67,7 @@ void add_interrupt_randomness(int irq,int irq_flags)
 {
 	lx_emul_trace(__func__);
 }
+
 
 
 #include <linux/fs.h>
@@ -255,24 +268,9 @@ void noinstr rcu_irq_exit(void)
 }
 
 
-
-
-
 #include <linux/wait_bit.h>
 
 void wake_up_var(void * var)
 {
 	lx_emul_trace(__func__);
 }
-
-
-
-
-
-
-
-
-
-
-
-
