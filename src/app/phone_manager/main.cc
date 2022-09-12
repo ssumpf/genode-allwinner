@@ -792,9 +792,15 @@ struct Sculpt::Main : Input_event_handler,
 
 		void generate(Xml_generator &xml) const
 		{
-			xml.attribute("earpiece", earpiece);
-			xml.attribute("speaker",  speaker);
-			xml.attribute("mic",      mic);
+			xml.node("earpiece", [&] () {
+				xml.attribute("volume", earpiece ? 100 : 0);
+			});
+			xml.node("speaker", [&] () {
+				xml.attribute("volume", speaker ? 100 : 0);
+			});
+			xml.node("mic", [&] () {
+				xml.attribute("volume", mic ? 60 : 0);
+			});
 		}
 	};
 
