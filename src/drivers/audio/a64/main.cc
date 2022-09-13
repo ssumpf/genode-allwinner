@@ -275,7 +275,7 @@ class Audio::Dma_engine : Platform::Device::Mmio
 
 					dma_src(_data.dma_addr());
 					dma_dst(_data.dma_addr());
-					write<Length>(size);
+					write<Length>(uint32_t(size));
 				}
 
 				void mode(Mode const src, Mode const dst)
@@ -296,9 +296,9 @@ class Audio::Dma_engine : Platform::Device::Mmio
 					write<Config::Dst_data_width>(dst);
 				}
 
-				void dma_src(uint32_t const addr)  { write<Src_phys_addr>(addr);  }
-				void dma_dst(uint32_t const addr)  { write<Dst_phys_addr>(addr);  }
-				void dma_next(uint32_t const addr) { write<Next_phys_addr>(addr); }
+				void dma_src(addr_t const addr)  { write<Src_phys_addr>(uint32_t(addr));  }
+				void dma_dst(addr_t const addr)  { write<Dst_phys_addr>(uint32_t(addr));  }
+				void dma_next(addr_t const addr) { write<Next_phys_addr>(uint32_t(addr)); }
 
 				void cache_maintainance()
 				{
@@ -321,7 +321,7 @@ class Audio::Dma_engine : Platform::Device::Mmio
 				uint32_t const _id;
 				Dma_engine    &_engine;
 
-				Fifo<Descriptor> _queue;
+				Fifo<Descriptor> _queue { };
 
 				struct Enable : Register<0x0, 32> { };
 				struct Pause  : Register<0x4, 32> { };
@@ -358,7 +358,7 @@ class Audio::Dma_engine : Platform::Device::Mmio
 				void enable()  { write<Enable>(1); };
 				void disable() { write<Enable>(0); };
 
-				void descr_dma(addr_t addr) { write<Descr_phys_addr>(addr); }
+				void descr_dma(addr_t addr) { write<Descr_phys_addr>(uint32_t(addr)); }
 
 				/* queue handling */
 				bool empty() const { return _queue.empty(); }

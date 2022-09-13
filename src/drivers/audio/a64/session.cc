@@ -444,7 +444,7 @@ struct Audio_aggregator : Audio::Session
 		return _audio_out_active() ? out.play_packet() : Packet();
 	}
 
-	void record_packet(Packet packet)
+	void record_packet(Packet packet) override
 	{
 		in.record_packet(packet);
 	}

@@ -32,6 +32,7 @@ struct Audio::Session
 
 	virtual Packet play_packet(void) = 0;
 	virtual void record_packet(Packet) = 0;
+	virtual ~Session() { }
 
 	static Session &construct(Genode::Env &env, Genode::Allocator &alloc);
 };
