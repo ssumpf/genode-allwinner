@@ -422,9 +422,9 @@ class Audio_control::Analog : public Analog_mmio
 
 		enum { MUTE = 0u };
 
-		unsigned const _volume(unsigned const volume, unsigned const max)
+		uint8_t _volume(unsigned const volume, unsigned const max)
 		{
-			return (max * (volume > 100u ? 100u : volume)) / 100;
+			return uint8_t((max * (volume > 100u ? 100u : volume)) / 100);
 		}
 
 	public:
