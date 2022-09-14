@@ -242,13 +242,16 @@ struct Driver::Ccu : private Attached_mmio
 		void _disable() override { write<Reg>(0); }
 	};
 
+
 	/*
 	 * 73728000 for 3*24576000 for 48.0KHz (pll=0x91020e04, pattern=0xc000b852)
 	 * 67737600 for 3*22579200 for 44.1KHz (pll=0x91020702, pattern=0xc000ef35)
 	 */
-	Pll _pll_audio         { _clocks, "pll-audio",         0x91020702, _regs(), 0x08  };
-	Pll _pll_audio_pattern { _clocks, "pll-audio-pattern", 0xc000ef35, _regs(), 0x284 };
-	Pll _pll_audio_bias    { _clocks, "pll-audio-bias",    0x10040000, _regs(), 0x224 };
+	Pll _pll_audio_441         { _clocks, "pll-audio-441",         0x91020702, _regs(), 0x08  };
+	Pll _pll_audio_pattern_441 { _clocks, "pll-audio-pattern-441", 0xc000ef35, _regs(), 0x284 };
+	Pll _pll_audio_48          { _clocks, "pll-audio-48",          0x91020e04, _regs(), 0x08  };
+	Pll _pll_audio_pattern_48  { _clocks, "pll-audio-pattern-48",  0xc000b852, _regs(), 0x284 };
+	Pll _pll_audio_bias        { _clocks, "pll-audio-bias",        0x10040000, _regs(), 0x224 };
 
 	Pll _pll_gpu           { _clocks, "pll-gpu",           0x83006207, _regs(), 0x38  };
 
