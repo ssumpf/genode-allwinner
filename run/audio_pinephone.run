@@ -55,6 +55,7 @@ install_config {
 				<policy label="audio_control -> ">
 					<device name="audio_codec"/>
 					<device name="audio_analog"/>
+					<device name="audio_codec_soc"/>
 				</policy>
 				<policy label="audio_drv -> " info="yes">
 					<device name="audio_interface"/>
@@ -91,6 +92,7 @@ install_config {
 				<mic      volume="60"/>
 				<earpiece volume="100"/>
 				<speaker  volume="0"/>
+				<codec    target="soc"/>
 			</config>
 			<route>
 				<service name="Platform"> <child name="platform_drv"/> </service>
