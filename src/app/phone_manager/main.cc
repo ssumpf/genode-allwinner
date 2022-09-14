@@ -781,13 +781,14 @@ struct Sculpt::Main : Input_event_handler,
 
 	struct Audio_config
 	{
-		bool earpiece, speaker, mic;
+		bool earpiece, speaker, mic, modem;
 
 		bool operator != (Audio_config const &other) const
 		{
 			return (earpiece != other.earpiece)
 			    || (speaker  != other.speaker)
-			    || (mic      != other.mic);
+			    || (mic      != other.mic)
+			    || (modem    != other.modem);
 		}
 
 		void generate(Xml_generator &xml) const
@@ -800,6 +801,9 @@ struct Sculpt::Main : Input_event_handler,
 			});
 			xml.node("mic", [&] () {
 				xml.attribute("volume", mic ? 60 : 0);
+			});
+			xml.node("codec", [&]() {
+				xml.attribute("target", modem ? "modem" : "soc");
 			});
 		}
 	};
@@ -816,7 +820,10 @@ struct Sculpt::Main : Input_event_handler,
 			.speaker  = !_current_call.active() || _current_call.speaker,
 
 			/* enable microphone during call */
-			.mic = _current_call.active()
+			.mic = _current_call.active(),
+
+			/* set codec target during call */
+			.modem = _current_call.active()
 		};
 
 		if (new_config != _curr_audio_config) {
