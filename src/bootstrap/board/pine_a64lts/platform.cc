@@ -13,10 +13,9 @@
 
 #include <platform.h>
 
-
 Bootstrap::Platform::Board::Board()
 :
-	early_ram_regions(Memory_region { ::Board::RAM_BASE, ::Board::RAM_SIZE }),
+	early_ram_regions(Memory_region { ::Board::RAM_BASE, ::Board::detect_ram_size() }),
 	late_ram_regions(Memory_region { }),
 	core_mmio(Memory_region { ::Board::UART_BASE, ::Board::UART_SIZE },
 	          Memory_region { ::Board::Cpu_mmio::IRQ_CONTROLLER_DISTR_BASE,
@@ -44,4 +43,63 @@ void Board::Cpu::wake_up_all_cpus(void * ip)
 		                      : "x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7",
 		                        "x8", "x9", "x10", "x11", "x12", "x13", "x14");
 	}
+}
+
+
+Hw::size_t Board::detect_ram_size()
+{
+	Genode::raw("Detecting RAM size");
+
+	struct Dram : Genode::Mmio
+	{
+		struct Rank : Register<0x0, 32>
+		{
+			struct Dual_bank : Bitfield<0, 1> { };
+			struct Banks     : Bitfield<2, 1> { };
+			struct Row_bits  : Bitfield<4, 4> { };
+			struct Page_size : Bitfield<8, 4> { };
+		};
+
+		bool     dual_bank() { return read<Rank::Dual_bank>() == 1; }
+		unsigned bank_bits() { return read<Rank::Banks>() ? 3 : 2;  }
+		unsigned row_bits()  { return read<Rank::Row_bits>() + 1;   }
+
+		unsigned page_size()
+		{
+			/*
+			 * Page_size is calculated by fls -> hence - 1, +4 is taken from U-boot
+			 * comes down to +3
+			 */
+			return 1u << (read<Rank::Page_size>() + 3);
+		}
+
+		Hw::size_t size()
+		{
+			return (1ul << (row_bits() + bank_bits())) * page_size();
+		}
+
+		void dump()
+		{
+			Genode::raw("b: ", bank_bits(), " r: ", row_bits(), " p: ", page_size());
+		}
+
+		Dram(Hw::addr_t const base) : Mmio(base) { }
+	};
+
+	Dram  rank0 { ::Board::DRAMCOM_BASE };
+	Dram  rank1 { ::Board::DRAMCOM_BASE + 0x4 };
+	unsigned r0 = rank0.read<Dram::Rank>();
+	unsigned r1 = rank1.read<Dram::Rank>();
+	Genode::raw("r0: ", Genode::Hex(r0));
+	Genode::raw("r1: ", Genode::Hex(r1));
+	rank0.dump();
+	rank1.dump();
+
+	Hw::size_t size = rank0.size();
+	if (rank0.dual_bank())
+		size += rank1.size();
+
+	Genode::raw("Total RAM: ", size/(1024*1024), "MB");
+
+	return size;
 }
