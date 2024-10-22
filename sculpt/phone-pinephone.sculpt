@@ -19,3 +19,5 @@ presets:      morph_browser jitsi goa_testbed
 launcher:     screenshot report_dump system_clock-dummy
 depot:        genodelabs cnuke alex-ab mstein nfeske cproc chelmuth jschlatow
 depot:        ssumpf skalk
+
+build: driver/wifi driver/touch/goodix lib/a64_wifi
