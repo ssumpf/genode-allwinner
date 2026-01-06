@@ -82,14 +82,12 @@
 			<mix name="left">  <play label="jitsi_browser -> left"  volume="1.0"/> </mix>
 			<mix name="right"> <play label="jitsi_browser -> right" volume="1.0"/> </mix>
 
-			<!-- capture microphone -->
 			<mix name="mic_left">  <play label="audio -> mic_left"/>  </mix>
 			<mix name="mic_right"> <play label="audio -> mic_right"/> </mix>
 
 			<policy label="jitsi_browser -> left"   record="mic_left"  period_ms="46" jitter_ms="23" volume="1.0"/>
 			<policy label="jitsi_browser -> right"  record="mic_right" period_ms="46" jitter_ms="23" volume="1.0"/>
 
-			<!-- rule for the audio driver matching its configuration -->
 			<policy label="audio -> left"   record="left"  period_ms="12" jitter_ms="5" volume="1.0"/>
 			<policy label="audio -> right"  record="right" period_ms="12" jitter_ms="5" volume="1.0"/>
 		</config>
@@ -138,11 +136,6 @@
 		<config>
 			<vfs>
 				<dir name="morph-browser">
-					<!--
-						Note: the length of the homepage string must be passed as
-						      hex value right before the string, e.g. \x23 for 35
-						      characters.
-					-->
 					<inline name="morph-browser.conf">
 						[General]
 						autoFitToWidthEnabled=false

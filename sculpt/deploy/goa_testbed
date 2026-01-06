@@ -53,7 +53,7 @@
 			<service name="File_system"> <child name="recall_fs"/>       </service>
 			<service name="Nic" label_prefix="tcp_terminal"> <child name="nic_router" label="telnet"/> </service>
 			<service name="Nic" label_prefix="lighttpd">     <child name="nic_router" label="http"/>   </service>
-			<service name="Nic"> <!-- for test scenario -->  <child name="nic_router"/>                </service>
+			<service name="Nic">                             <child name="nic_router"/>                </service>
 			<service name="Report" label_last="clipboard"> <parent/> </service>
 			<service name="Report" label_last="shape">     <parent/> </service>
 			<service name="ROM"    label_last="clipboard"> <parent/> </service>
