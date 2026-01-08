@@ -9,7 +9,7 @@
 		<service name="Timer"> <parent/> </service>
 	</common_routes>
 
-	<start name="audio" pkg="a64_audio" priority="0" cpu="20">
+	<start name="audio" pkg="a64_audio" priority="-1">
 		<affinity xpos="0" ypos="0" width="1" height="1"/>
 		<config record_play="yes"/>
 		<route>
@@ -19,7 +19,7 @@
 		</route>
 	</start>
 
-	<start name="mixer" pkg="record_play_mixer" priority="0" cpu="20">
+	<start name="mixer" pkg="record_play_mixer" priority="-1">
 		<affinity xpos="0" ypos="0" width="1" height="1"/>
 		<config jitter_ms="10" warning_rate_ms="0">
 
@@ -38,7 +38,7 @@
 		</route>
 	</start>
 
-	<start name="record_rom" pkg="record_rom" priority="0">
+	<start name="record_rom" pkg="record_rom" priority="-2">
 		<affinity xpos="0" ypos="0" width="1" height="1"/>
 		<config period_ms="12" sample_rate_hz="44100">
 			<record label="mic_left"/>
@@ -50,7 +50,7 @@
 		</route>
 	</start>
 
-	<start name="osci" pkg="rom_osci" priority="-1">
+	<start name="osci" pkg="rom_osci" priority="-2">
 		<affinity xpos="0" ypos="0" width="1" height="1"/>
 
 		<config fps="50" v_scale="1" phase_lock="yes" xpos="0" ypos="360"

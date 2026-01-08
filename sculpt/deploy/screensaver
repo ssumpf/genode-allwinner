@@ -11,7 +11,7 @@
 
 	<start name="black_hole" pkg="black_hole"/>
 
-	<start name="screensaver" pkg="cnuke/pkg/screensaver/2025-02-28" cpu="60">
+	<start name="screensaver" pkg="ssumpf_test/pkg/screensaver/2026-01-06-c" priority="-2">
 		<affinity xpos="0" width="4"/>
 		<route>
 			<service name="Gui">  <parent label="focus"/> </service>

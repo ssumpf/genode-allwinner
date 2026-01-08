@@ -9,13 +9,13 @@
 		<service name="Timer"> <parent/> </service>
 	</common_routes>
 
-	<start name="gpu" caps="1500" pkg="a64_lima_gpu-pinephone">
+	<start name="gpu" caps="1500" pkg="a64_lima_gpu-pinephone" priority="-1">
 		<route>
 			<service name="Platform"> <parent label="gpu"/> </service>
 		</route>
 	</start>
 
-	<start name="glmark2" pkg="glmark2">
+	<start name="glmark2" pkg="glmark2" priority="-3">
 		<route>
 			<service name="Gui"> <parent label="focus"/> </service>
 			<service name="Gpu"> <child name="gpu"/> </service>

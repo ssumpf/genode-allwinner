@@ -26,7 +26,7 @@
 		</route>
 	</start>
 
-	<start name="dynamic_rom" ram="4M" pkg="dynamic_rom">
+	<start name="dynamic_rom" ram="4M" pkg="dynamic_rom" priority="-3">
 		<config verbose="yes">
 			<rom name="nano3d.config">
 				<inline description="initial state">
@@ -49,7 +49,7 @@
 		</config>
 	</start>
 
-	<start name="nano3d" pkg="unconfigured_nano3d">
+	<start name="nano3d" pkg="unconfigured_nano3d" priority="-2">
 		<affinity xpos="1" width="1"/>
 		<route>
 			<service name="Gui"> <parent label="follow_touch"/> </service>

@@ -10,7 +10,7 @@
 		<service name="Timer"> <parent/> </service>
 	</common_routes>
 
-	<start ram="16M" caps="120" name="log_terminal" pkg="terminal">
+	<start ram="16M" caps="120" name="log_terminal" pkg="terminal" priority="-3">
 		<config>
 			<initial width="720" initial_height="960"/>
 			<palette>
@@ -32,7 +32,7 @@
 		</route>
 	</start>
 
-	<start name="log" pkg="stdin2out">
+	<start name="log" pkg="stdin2out" priority="-3">
 		<config>
 			<libc stdin="/report/log" stdout="/dev/terminal"/>
 			<vfs>
@@ -46,27 +46,27 @@
 		</route>
 	</start>
 
-	<start name="fonts_fs" pkg="fonts_fs">
+	<start name="fonts_fs" pkg="fonts_fs" priority="-3">
 		<route>
 			<service name="ROM" label="config">
 				<parent label="config -> managed/fonts"/> </service>
 		</route>
 	</start>
 
-	<start name="sntp_dummy_rtc" pkg="ssumpf/pkg/sntp_dummy_rtc/2025-10-27">
+	<start name="system_clock" pkg="cnuke/pkg/chrony_system_rtc/2026-01-08">
 		<route>
 			<service name="Nic"> <child name="nic_router"/> </service>
 		</route>
 	</start>
 
-	<start name="gpu" version="morph" caps="2000" pkg="a64_lima_gpu-pinephone">
+	<start name="gpu" version="morph" caps="2000" pkg="a64_lima_gpu-pinephone" priority="-1">
 		<affinity xpos="0" width="1"/>
 		<route>
 			<service name="Platform"> <parent label="gpu"/> </service>
 		</route>
 	</start>
 
-	<start name="audio" pkg="a64_audio" priority="0" cpu="20">
+	<start name="audio" pkg="a64_audio" priority="-1">
 		<affinity xpos="0" ypos="0" width="1" height="1"/>
 		<config record_play="yes"/>
 		<route>
@@ -76,7 +76,7 @@
 		</route>
 	</start>
 
-	<start name="mixer" pkg="record_play_mixer" priority="0" cpu="20">
+	<start name="mixer" pkg="record_play_mixer" priority="-1">
 		<affinity xpos="0" ypos="0" width="1" height="1"/>
 		<config jitter_ms="23" warning_rate_ms="0">
 
@@ -98,7 +98,7 @@
 		<config> <record/> <capture/> <report/> </config>
 	</start>
 
-	<start name="touch_keyboard" pkg="touch_keyboard">
+	<start name="touch_keyboard" pkg="touch_keyboard" priority="-1">
 		<route>
 			<service name="Gui"> <parent label="touch_keyboard"/> </service>
 			<service name="Event"> <parent label="global"/> </service>
@@ -110,7 +110,7 @@
 		<route> <service name="RM"> <parent/> </service> </route>
 	</start>
 
-	<start name="morph_config_fs" pkg="vfs">
+	<start name="morph_config_fs" pkg="vfs" priority="-3">
 		<provides> <service name="File_system"/> </provides>
 		<config>
 			<vfs>
@@ -136,7 +136,7 @@
 		</config>
 	</start>
 
-	<start ram="1350M" name="morph_browser" pkg="cproc/pkg/morph_browser_pinephone-jemalloc/2025-10-27">
+	<start ram="1350M" name="morph_browser" pkg="cproc/pkg/morph_browser_pinephone-jemalloc/2025-10-27" priority="-3">
 		<affinity xpos="1" width="2"/>
 		<route>
 			<service name="Nic">
@@ -164,7 +164,7 @@
 				<parent/>
 			</service>
 			<service name="Rtc">
-				<child name="sntp_dummy_rtc"/>
+				<child name="system_clock"/>
 			</service>
 			<service name="Play">
 				<child name="mixer"/>

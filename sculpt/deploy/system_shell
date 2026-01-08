@@ -9,14 +9,14 @@
 		<service name="Timer"> <parent/> </service>
 	</common_routes>
 
-	<start name="fonts_fs" pkg="fonts_fs">
+	<start name="fonts_fs" pkg="fonts_fs" priority="-3">
 		<route>
 			<service name="ROM" label="config">
 				<parent label="config -> managed/fonts"/> </service>
 		</route>
 	</start>
 
-	<start name="system_shell" pkg="system_shell">
+	<start name="system_shell" pkg="system_shell" priority="-3">
 		<route>
 			<service name="Gui">                        <parent label="focus"/>           </service>
 			<service name="File_system" label_prefix="fonts ->">  <child name="fonts_fs"/>          </service>
@@ -32,7 +32,7 @@
 		</route>
 	</start>
 
-	<start name="touch_keyboard" pkg="touch_keyboard">
+	<start name="touch_keyboard" pkg="touch_keyboard" priority="-1">
 		<route>
 			<service name="Gui"> <parent label="touch_keyboard"/> </service>
 			<service name="Event"> <parent label="global"/> </service>
