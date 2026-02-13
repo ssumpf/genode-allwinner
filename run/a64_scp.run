@@ -3,48 +3,41 @@ build { core init timer driver/platform/a64 test/scp }
 create_boot_directory
 
 install_config {
-	<config>
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-		</parent-provides>
+config
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service ROM
+  + service IO_MEM
+  + service IRQ
 
-		<default caps="100" ram="1M"/>
++ default | caps: 100 | ram: 1M
 
-		<start name="timer">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Timer"/> </provides>
-		</start>
++ start timer
+  + route | + any-service | + parent
+  + provides | + service Timer
 
-		<start name="a64_platform" caps="150" managing_system="yes">
-			<provides> <service name="Platform"/> <service name="Scp"/> </provides>
-			<route> <any-service> <parent/> </any-service> </route>
-			<config devices_rom="config">
-			</config>
-		</start>
++ start a64_platform | caps: 150 | managing_system: yes
+  + provides
+    + service Platform
+    + service Scp
+  + route | + any-service | + parent
+  + config | devices_rom: config
 
-		<start name="test-scp">
-			<route>
-				<service name="Scp"> <child name="a64_platform"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-			<config program="11 12 + . cr words cr"/>
-		</start>
++ start test-scp
+  + config | program: 11 12 + . cr words cr
+  + route
+    + service Scp | + child a64_platform
+    + any-service | + parent
 
-		<start name="test-scp-2">
-			<binary name="test-scp"/>
-			<route>
-				<service name="Scp"> <child name="a64_platform"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-			<config program="1 2 3 4 5 6 .s cr"/>
-		</start>
-
-	</config>
++ start test-scp-2
+  + binary test-scp
+  + config | program: 1 2 3 4 5 6 .s cr
+  + route
+    + service Scp | + child a64_platform
+    + any-service | + parent
+-
 }
 
 build_boot_image [build_artifacts]

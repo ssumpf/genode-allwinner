@@ -3,42 +3,37 @@ build { core lib/ld init timer test/at_protocol server/terminal_crosslink }
 create_boot_directory
 
 install_config {
-	<config>
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-		</parent-provides>
+config
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service ROM
+  + service IO_MEM
+  + service IRQ
 
-		<default caps="100" ram="1M"/>
++ default | caps: 100 | ram: 1M
 
-		<default-route>
-			<any-service> <parent/> <any-child/> </any-service>
-		</default-route>
++ default-route
+  + any-service
+    + parent
+    + any-child
 
-		<start name="timer">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Timer"/> </provides>
-		</start>
++ start timer
+  + route | + any-service | + parent
+  + provides | + service Timer
 
-		<start name="terminal_crosslink">
-			<provides> <service name="Terminal"/> </provides>
-		</start>
++ start terminal_crosslink
+  + provides | + service Terminal
 
-		<start name="modem">
-			<binary name="test-at_protocol"/>
-			<config role="modem"/>
-		</start>
++ start modem
+  + binary test-at_protocol
+  + config | role: modem
 
-		<start name="driver">
-			<binary name="test-at_protocol"/>
-			<config role="driver"/>
-		</start>
-
-	</config>
++ start driver
+  + binary test-at_protocol
+  + config | role: driver
+-
 }
 
 build_boot_image [build_artifacts]

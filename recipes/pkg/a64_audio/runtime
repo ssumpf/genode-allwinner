@@ -1,16 +1,17 @@
-<runtime ram="1M" caps="100" binary="a64_audio">
+runtime | ram: 1M | caps: 100 | binary: a64_audio
 
-	<requires>
-		<timer/>
-		<platform label="audio"/>
-	</requires>
++ requires
+  + timer
+  + platform | label: audio
 
-	<provides> <play/> <record/> <audio_out/> <audio_in/> </provides>
++ provides
+  + play
+  + record
+  + audio_out
+  + audio_in
 
-	<config/>
++ config
 
-	<content>
-		<rom label="a64_audio"/>
-	</content>
-
-</runtime>
++ content
+  + rom | label: a64_audio
+-

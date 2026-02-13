@@ -3,30 +3,26 @@ build { core lib/ld init timer test/pin_control }
 create_boot_directory
 
 install_config {
-	<config>
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-		</parent-provides>
+config
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service ROM
+  + service IO_MEM
+  + service IRQ
 
-		<default caps="100" ram="1M"/>
++ default | caps: 100 | ram: 1M
 
-		<start name="timer">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Timer"/> </provides>
-		</start>
++ start timer
+  + route | + any-service | + parent
+  + provides | + service Timer
 
-		<start name="test-pin_control">
-			<route>
-				<service name="Timer"> <child name="timer"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
-	</config>
++ start test-pin_control
+  + route
+    + service Timer | + child timer
+    + any-service | + parent
+-
 }
 
 build_boot_image [build_artifacts]

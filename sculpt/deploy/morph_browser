@@ -1,197 +1,142 @@
-<config arch="" info="Chromium-based Morph web browser">
+config | arch: | info: Chromium-based Morph web browser
 
-	<common_routes>
-		<service name="ROM" label_last="ld.lib.so"> <parent/> </service>
-		<service name="ROM" label_last="init">      <parent/> </service>
-		<service name="CPU">   <parent/> </service>
-		<service name="PD">    <parent/> </service>
-		<service name="RM">    <parent/> </service>
-		<service name="LOG">   <parent/> </service>
-		<service name="Timer"> <parent/> </service>
-	</common_routes>
++ common_routes
+  + service ROM | label_last: ld.lib.so | + parent
+  + service ROM | label_last: init      | + parent
+  + service CPU                         | + parent
+  + service PD                          | + parent
+  + service RM                          | + parent
+  + service LOG                         | + parent
+  + service Timer                       | + parent
 
-	<start ram="16M" caps="120" name="log_terminal" pkg="terminal">
-		<config>
-			<initial width="720" initial_height="960"/>
-			<palette>
-				<color index="0" value="#171c29"/>
-				<color index="8" value="#171c29"/>
-			</palette>
-			<vfs>
-				<rom name="VeraMono.ttf"/>
-				<dir name="fonts">
-					<dir name="monospace">
-						<ttf name="regular" path="/VeraMono.ttf" size_px="10"/>
-					</dir>
-				</dir>
-			</vfs>
-		</config>
-		<route>
-			<service name="ROM" label_last="VeraMono.ttf"> <parent/> </service>
-			<service name="Gui"> <parent/> </service>
-		</route>
-	</start>
++ start log_terminal | ram: 16M | caps: 120 | pkg: terminal
+  + config
+  | + initial | width: 720 | initial_height: 960
+  | + palette
+  |   + color | index: 0 | value: #171c29
+  |   + color | index: 8 | value: #171c29
+  | + vfs
+  |   + rom VeraMono.ttf
+  |   + dir fonts
+  |     + dir monospace | + ttf regular | path: /VeraMono.ttf | size_px: 10
+  + route
+    + service ROM | label_last: VeraMono.ttf | + parent
+    + service Gui                            | + parent
 
-	<start name="log" pkg="stdin2out">
-		<config>
-			<libc stdin="/report/log" stdout="/dev/terminal"/>
-			<vfs>
-				<dir name="dev"> <terminal/> </dir>
-				<dir name="report"> <fs label="report -> /"/> </dir>
-			</vfs>
-		</config>
-		<route>
-			<service name="File_system"> <parent identity="report"/> </service>
-			<service name="Terminal"> <child name="log_terminal"/> </service>
-		</route>
-	</start>
++ start log | pkg: stdin2out
+  + config
+  | + libc | stdin: /report/log | stdout: /dev/terminal
+  | + vfs
+  |   + dir dev    | + terminal
+  |   + dir report | + fs | label: report -> /
+  + route
+    + service File_system | + parent | identity: report
+    + service Terminal    | + child log_terminal
 
-	<start name="fonts_fs" pkg="fonts_fs">
-		<route>
-			<service name="ROM" label="config">
-				<parent label="config -> managed/fonts"/> </service>
-		</route>
-	</start>
++ start fonts_fs | pkg: fonts_fs
+  + route
+    + service ROM | label: config | + parent | label: config -> managed/fonts
 
-	<start name="sntp_dummy_rtc" pkg="ssumpf/pkg/sntp_dummy_rtc/2025-10-27">
-		<route>
-			<service name="Nic"> <child name="nic_router"/> </service>
-		</route>
-	</start>
++ start sntp_dummy_rtc | pkg: ssumpf/pkg/sntp_dummy_rtc/2025-10-27
+  + route
+    + service Nic | + child nic_router
 
-	<start name="gpu" version="morph" caps="2000" pkg="a64_lima_gpu-pinephone">
-		<affinity xpos="0" width="1"/>
-		<route>
-			<service name="Platform"> <parent label="gpu"/> </service>
-		</route>
-	</start>
++ start gpu | version: morph | caps: 2000 | pkg: a64_lima_gpu-pinephone
+  + affinity | xpos: 0 | width: 1
+  + route
+    + service Platform | + parent | label: gpu
 
-	<start name="audio" pkg="a64_audio" priority="0" cpu="20">
-		<affinity xpos="0" ypos="0" width="1" height="1"/>
-		<config record_play="yes"/>
-		<route>
-			<service name="Play">   <child name="mixer"/> </service>
-			<service name="Record"> <child name="mixer"/> </service>
-			<service name="Platform"> <parent label="audio"/> </service>
-		</route>
-	</start>
++ start audio | pkg: a64_audio | priority: 0 | cpu: 20
+  + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
+  + config | record_play: yes
+  + route
+    + service Play     | + child mixer
+    + service Record   | + child mixer
+    + service Platform | + parent | label: audio
 
-	<start name="mixer" pkg="record_play_mixer" priority="0" cpu="20">
-		<affinity xpos="0" ypos="0" width="1" height="1"/>
-		<config jitter_ms="23" warning_rate_ms="0">
++ start mixer | pkg: record_play_mixer | priority: 0 | cpu: 20
+  + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
+  + config | jitter_ms: 23 | warning_rate_ms: 0
+  |
+  | + mix left  | + play | label: morph_browser -> left  | volume: 1.0
+  | + mix right | + play | label: morph_browser -> right | volume: 1.0
+  |
+  | + mix mic_left | . capture microphone
+  |   x play | label: audio -> mic_left
+  | + mix mic_right
+  |   x play | label: audio -> mic_right
+  |
+  | + policy | label: morph_browser -> left | . mic capture by browser
+  |          | record: mic_left  | period_ms: 46 | jitter_ms: 23 | volume: 1.0
+  | + policy | label: morph_browser -> right
+  |          | record: mic_right | period_ms: 46 | jitter_ms: 23 | volume: 1.0
+  |
+  | + policy | label: audio -> left | . playback by audio driver
+  |          | record: left  | period_ms: 12 | jitter_ms: 5 | volume: 1.0
+  | + policy | label: audio -> right
+  |          | record: right | period_ms: 12 | jitter_ms: 5 | volume: 1.0
+  |
+  + route | + service Report | + parent
 
-			<mix name="left">  <play label="morph_browser -> left"  volume="1.0"/> </mix>
-			<mix name="right"> <play label="morph_browser -> right" volume="1.0"/> </mix>
++ start black_hole | pkg: black_hole
+  + config
+    + record
+    + capture
+    + report
 
-			<!-- capture microphone -->
-			<mix name="mic_left">  <!-- <play label="audio -> mic_left"/>  --> </mix>
-			<mix name="mic_right"> <!-- <play label="audio -> mic_right"/> --> </mix>
++ start touch_keyboard | pkg: touch_keyboard
+  + route
+    + service Gui                                  | + parent | label: touch_keyboard
+    + service Event                                | + parent | label: global
+    + service File_system | label_prefix: fonts -> | + child fonts_fs
 
-			<policy label="morph_browser -> left"  record="mic_left"  period_ms="46" jitter_ms="23" volume="1.0"/>
-			<policy label="morph_browser -> right" record="mic_right" period_ms="46" jitter_ms="23" volume="1.0"/>
++ start mesa_gpu-lima | pkg: mesa_gpu-lima
+  + route
+    + service RM
+      + parent
 
-			<!-- rule for the audio driver matching its configuration -->
-			<policy label="audio -> left"  record="left"  period_ms="12" jitter_ms="5" volume="1.0"/>
-			<policy label="audio -> right" record="right" period_ms="12" jitter_ms="5" volume="1.0"/>
-		</config>
-		<route>
-			<service name="Report"> <parent/> </service>
-		</route>
-	</start>
++ start morph_config_fs | pkg: vfs
+  + provides | + service File_system
+  + config
+    + default-policy | writeable: yes | root: /
+    + vfs
+      + dir morph-browser
+      | + inline morph-browser.conf
+      |   .
+      |   . Note: the length of the homepage string must be passed as
+      |   . hex value right before the string, e.g. \x23 for 35
+      |   . characters.
+      |   .
+      |   : [General]
+      |   : autoFitToWidthEnabled=false
+      |   : defaultAudioDevice=
+      |   : defaultVideoDevice=
+      |   : domainWhiteListMode=false
+      |   : homepage=@Variant(\0\0\0\x11\0\0\0\x23https://genode.org/files/pinephone/)
+      |   : incognitoOnStart=false
+      |   : newTabDefaultSection=0
+      |   : restoreSession=true
+      |   : searchEngine=duckduckgo
+      |   : setDesktopMode=false
+      |   : zoomFactor=1.0
+      |   :
+      + ram
 
-	<start name="black_hole" pkg="black_hole">
-		<config> <record/> <capture/> <report/> </config>
-	</start>
-
-	<start name="touch_keyboard" pkg="touch_keyboard">
-		<route>
-			<service name="Gui"> <parent label="touch_keyboard"/> </service>
-			<service name="Event"> <parent label="global"/> </service>
-			<service name="File_system" label_prefix="fonts ->"> <child name="fonts_fs"/> </service>
-		</route>
-	</start>
-
-	<start name="mesa_gpu-lima" pkg="mesa_gpu-lima">
-		<route> <service name="RM"> <parent/> </service> </route>
-	</start>
-
-	<start name="morph_config_fs" pkg="vfs">
-		<provides> <service name="File_system"/> </provides>
-		<config>
-			<vfs>
-				<dir name="morph-browser">
-					<!--
-						Note: the length of the homepage string must be passed as
-						      hex value right before the string, e.g. \x23 for 35
-						      characters.
-					-->
-					<inline name="morph-browser.conf">
-						[General]
-						autoFitToWidthEnabled=false
-						defaultAudioDevice=
-						defaultVideoDevice=
-						domainWhiteListMode=false
-						homepage=@Variant(\0\0\0\x11\0\0\0\x23https://genode.org/files/pinephone/)
-						incognitoOnStart=false
-						newTabDefaultSection=0
-						restoreSession=true
-						searchEngine=duckduckgo
-						setDesktopMode=false
-						zoomFactor=1.0
-					</inline>
-				</dir>
-				<ram/>
-			</vfs>
-			<default-policy writeable="yes" root="/"/>
-		</config>
-	</start>
-
-	<start ram="1350M" name="morph_browser" pkg="cproc/pkg/morph_browser_pinephone-jemalloc/2025-10-27">
-		<affinity xpos="1" width="2"/>
-		<route>
-			<service name="Nic">
-				<child name="nic_router"/>
-			</service>
-			<service name="File_system" label_prefix="config ->">
-				<child name="morph_config_fs"/>
-			</service>
-			<service name="File_system" label_prefix="downloads ->">
-				<child name="ram_fs"/>
-			</service>
-			<service name="Gui" label_last="QGenodeScreen">
-				<parent/>
-			</service>
-			<service name="Gui">
-				<parent label="focus"/>
-			</service>
-			<service name="Report" label_last="shape">
-				<parent label="shape"/>
-			</service>
-			<service name="Report" label="clipboard">
-				<parent/>
-			</service>
-			<service name="ROM" label="clipboard">
-				<parent/>
-			</service>
-			<service name="Rtc">
-				<child name="sntp_dummy_rtc"/>
-			</service>
-			<service name="Play">
-				<child name="mixer"/>
-			</service>
-			<service name="Record">
-				<child name="black_hole"/>
-			</service>
-			<service name="Capture">
-				<child name="black_hole"/>
-			</service>
-			<service name="Gpu">
-				<child name="gpu"/>
-			</service>
-			<service name="ROM" label="mesa_gpu.lib.so">
-				<child name="mesa_gpu-lima"/>
-			</service>
-		</route>
-	</start>
-
-</config>
++ start morph_browser | ram: 1350M | pkg: cproc/pkg/morph_browser_pinephone-jemalloc/2025-10-27
+  + affinity | xpos: 1 | width: 2
+  + route
+    + service Nic                                      | + child nic_router
+    + service File_system | label_prefix: config ->    | + child morph_config_fs
+    + service File_system | label_prefix: downloads -> | + child ram_fs
+    + service Gui | label_last: QGenodeScreen          | + parent
+    + service Gui                                      | + parent | label: focus
+    + service Report | label_last: shape               | + parent | label: shape
+    + service Report | label: clipboard                | + parent
+    + service ROM | label: clipboard                   | + parent
+    + service Rtc                                      | + child sntp_dummy_rtc
+    + service Play                                     | + child mixer
+    + service Record                                   | + child black_hole
+    + service Capture                                  | + child black_hole
+    + service Gpu                                      | + child gpu
+    + service ROM | label: mesa_gpu.lib.so             | + child mesa_gpu-lima
+-

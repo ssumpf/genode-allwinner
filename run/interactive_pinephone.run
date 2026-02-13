@@ -16,47 +16,44 @@ build {
 }
 
 install_config {
-<config>
-	<parent-provides>
-		<service name="ROM"/>
-		<service name="IRQ"/>
-		<service name="IO_MEM"/>
-		<service name="PD"/>
-		<service name="RM"/>
-		<service name="CPU"/>
-		<service name="LOG"/>
-	</parent-provides>
-	<default-route>
-		<any-service> <parent/> <any-child/> </any-service>
-	</default-route>
-	<default caps="100" ram="1M"/>
+config
++ parent-provides
+  + service ROM
+  + service IRQ
+  + service IO_MEM
+  + service PD
+  + service RM
+  + service CPU
+  + service LOG
 
-	<start name="timer">
-		<provides><service name="Timer"/></provides>
-	</start>
++ default-route
+  + any-service
+    + parent
+    + any-child
 
-	<start name="drivers" caps="1500" ram="64M" managing_system="yes">
-		<binary name="init"/>
-		<route>
-			<service name="ROM" label="config"> <parent label="drivers.config"/> </service>
-			<service name="Timer">   <child name="timer"/> </service>
-			<service name="Capture"> <child name="test-framebuffer"/> </service>
-			<service name="Event">   <child name="event_dump"/> </service>
-			<any-service> <parent/> </any-service>
-		</route>
-	</start>
++ default | caps: 100 | ram: 1M
 
-	<start name="test-framebuffer" ram="10M">
-		<provides> <service name="Capture"/> </provides>
-		<config/>
-	</start>
++ start timer
+  + provides | + service Timer
 
-	<start name="event_dump">
-		<provides> <service name="Event"/> </provides>
-		<config/>
-	</start>
++ start drivers | caps: 1500 | ram: 64M | managing_system: yes
+  + binary init
+  + route
+    + service ROM | label: config | + parent | label: drivers.config
+    + service Timer               | + child timer
+    + service Capture             | + child test-framebuffer
+    + service Event               | + child event_dump
+    + any-service                 | + parent
 
-</config>}
++ start test-framebuffer | ram: 10M
+  + provides | + service Capture
+  + config
+
++ start event_dump
+  + provides | + service Event
+  + config
+-
+}
 
 foreach file [glob "[genode_dir]/repos/allwinner/recipes/raw/drivers_interactive-pinephone/*.config"] {
 	copy_file $file [run_dir]/genode/ }

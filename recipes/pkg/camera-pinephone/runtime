@@ -1,16 +1,14 @@
-<runtime binary="pinephone_camera" caps="250" ram="80M">
+runtime | binary: pinephone_camera | caps: 250 | ram: 80M
 
-	<requires>
-		<platform label="camera"/>
-		<gui/>
-		<pin_state/>
-		<pin_control/>
-		<timer/>
-	</requires>
++ requires
+  + platform | label: camera
+  + gui
+  + pin_state
+  + pin_control
+  + timer
 
-	<content>
-		<rom label="ld.lib.so"/>
-		<rom label="camera-pinephone.dtb" as="dtb"/>
-		<rom label="pinephone_camera"/>
-	</content>
-</runtime>
++ content
+  + rom | label: ld.lib.so
+  + rom | label: camera-pinephone.dtb | as: dtb
+  + rom | label: pinephone_camera
+-

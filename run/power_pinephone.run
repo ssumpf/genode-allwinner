@@ -7,62 +7,59 @@ build {
 create_boot_directory
 
 install_config {
-	<config>
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-		</parent-provides>
+config
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service ROM
+  + service IO_MEM
+  + service IRQ
 
-		<default caps="100" ram="1M"/>
++ default | caps: 100 | ram: 1M
 
-		<start name="timer">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Timer"/> </provides>
-		</start>
++ start timer
+  + route | + any-service | + parent
+  + provides | + service Timer
 
-		<start name="report_rom">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Report"/> <service name="ROM"/> </provides>
-			<config verbose="yes"/>
-		</start>
++ start report_rom
+  + route | + any-service | + parent
+  + provides
+    + service Report
+    + service ROM
+  + config | verbose: yes
 
-		<start name="event_dump">
-			<provides> <service name="Event"/> </provides>
-			<config/>
-			<route> <any-service> <parent/> </any-service> </route>
-		</start>
++ start event_dump
+  + provides | + service Event
+  + config
+  + route | + any-service | + parent
 
-		<start name="a64_platform" caps="150" managing_system="yes">
-			<provides> <service name="Platform"/> <service name="Scp"/> </provides>
-			<route> <any-service> <parent/> </any-service> </route>
-			<config devices_rom="config">
-				<device name="rintc">
-					<io_mem address="0x1f00c00" size="0x400"/>
-					<irq number="64"/>
-				</device>
-				<policy label="pinephone_power -> "> <device name="rintc"/> </policy>
-			</config>
-		</start>
++ start a64_platform | caps: 150 | managing_system: yes
+  + provides
+    + service Platform
+    + service Scp
+  + route | + any-service | + parent
+  + config | devices_rom: config
+    + device rintc
+      + io_mem | address: 0x1f00c00 | size: 0x400
+      + irq | number: 64
+    + policy | label_prefix: pinephone_power ->
+      + device rintc
 
-		<start name="pinephone_power">
-			<route>
-				<service name="Timer">     <child name="timer"/>        </service>
-				<service name="Scp">       <child name="a64_platform"/> </service>
-				<service name="Platform">  <child name="a64_platform"/> </service>
-				<service name="Report">    <child name="report_rom"/>   </service>
-				<service name="Event">     <child name="event_dump"/>   </service>
-				<service name="ROM" label="system"> <parent label="config"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-			<!-- supported 'state' attribute values are 'reset', 'poweroff' -->
-			<config period_ms="3000" system_rom="config" state=""/>
-		</start>
-
-	</config>
++ start pinephone_power
+  + route
+    + service Timer               | + child timer
+    + service Scp                 | + child a64_platform
+    + service Platform            | + child a64_platform
+    + service Report              | + child report_rom
+    + service Event               | + child event_dump
+    + service ROM | label: system | + parent | label: config
+    + any-service                 | + parent
+  + config | period_ms: 3000 | system_rom: config | state:
+    .
+    . supported 'state' attribute values are 'reset', 'poweroff'
+    .
+-
 }
 
 build_boot_image [build_artifacts]

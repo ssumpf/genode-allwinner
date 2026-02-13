@@ -3,48 +3,41 @@ build { core init server/event_dump driver/platform/a64 driver/button/pinephone 
 create_boot_directory
 
 install_config {
-	<config>
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-		</parent-provides>
+config
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service ROM
+  + service IO_MEM
+  + service IRQ
 
-		<default caps="100" ram="1M"/>
++ default | caps: 100 | ram: 1M
 
-		<start name="event_dump">
-			<provides> <service name="Event"/> </provides>
-			<config/>
-			<route> <any-service> <parent/> </any-service> </route>
-		</start>
++ start event_dump
+  + provides | + service Event
+  + route | + any-service | + parent
+  + config
 
-		<start name="a64_platform" caps="150" managing_system="yes">
-			<provides> <service name="Platform"/> <service name="Scp"/> </provides>
-			<route> <any-service> <parent/> </any-service> </route>
-			<config devices_rom="config">
-				<device name="keyadc">
-					<io_mem address="0x1c21800" size="0x400"/>
-					<irq number="62"/>
-				</device>
-				<policy label="pinephone_button -> ">
-					<device name="keyadc"/>
-				</policy>
-			</config>
-		</start>
++ start a64_platform | caps: 150 | managing_system: yes
+  + provides
+    + service Platform
+    + service Scp
+  + route | + any-service | + parent
+  + config | devices_rom: config
+    + device keyadc
+      + io_mem | address: 0x1c21800 | size: 0x400
+      + irq | number: 62
+    + policy | label_prefix: pinephone_button ->
+      + device keyadc
 
-		<start name="pinephone_button">
-			<route>
-				<service name="Platform"> <child name="a64_platform"/> </service>
-				<service name="Event">    <child name="event_dump"/>   </service>
-				<any-service> <parent/> </any-service>
-			</route>
-			<config/>
-		</start>
-
-	</config>
++ start pinephone_button
+  + config
+  + route
+    + service Platform | + child a64_platform
+    + service Event    | + child event_dump
+    + any-service      | + parent
+-
 }
 
 build_boot_image [build_artifacts]

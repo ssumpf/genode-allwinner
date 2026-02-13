@@ -15,123 +15,107 @@ build {
 create_boot_directory
 
 install_config {
-	<config verbose="yes" prio_levels="2">
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="RM"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-			<service name="TRACE"/>
-		</parent-provides>
+config | verbose: yes | prio_levels: 2
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service RM
+  + service ROM
+  + service IO_MEM
+  + service IRQ
+  + service TRACE
 
-		<default caps="100" ram="1M"/>
-		<default-route>
-			<any-service> <parent/> <any-child/> </any-service>
-		</default-route>
++ default | caps: 100 | ram: 1M
 
-		<start name="timer" priority="0">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Timer"/> </provides>
-		</start>
++ default-route
+  + any-service
+    + parent
+    + any-child
 
-		<start name="report_rom" priority="-1">
-			<provides> <service name="Report"/> <service name="ROM"/> </provides>
-			<config verbose="yes"/>
-		</start>
++ start timer | priority: 0
+  + route | + any-service | + parent
+  + provides | + service Timer
 
-		<start name="platform" caps="200" ram="2M" managing_system="yes" priority="-1">
-			<binary name="a64_platform"/>
-			<provides> <service name="Platform"/> <service name="Scp"/> </provides>
-			<config devices="yes">
-				<policy label="a64_pio -> ">
-					<device name="pio"/>
-				</policy>
-				<policy label="audio_control -> ">
-					<device name="audio_codec"/>
-					<device name="audio_analog"/>
-					<device name="audio_codec_soc"/>
-				</policy>
-				<policy label="audio -> " info="yes">
-					<device name="audio_interface"/>
-					<device name="dma_controller"/>
-				</policy>
-			</config>
-			<route> <any-service> <parent/> </any-service> </route>
-		</start>
++ start report_rom | priority: -1
+  + provides
+    + service Report
+    + service ROM
+  + config | verbose: yes
 
-		<start name="a64_pio" priority="-1">
-			<provides>
-				<service name="Pin_state"/>
-				<service name="Pin_control"/>
-				<service name="IRQ"/>
-			</provides>
-			<route>
-				<service name="ROM"> <parent/> </service>
-				<service name="CPU"> <parent/> </service>
-				<service name="PD">  <parent/> </service>
-				<service name="LOG"> <parent/> </service>
-				<service name="Platform"> <child name="platform"/> </service>
-			</route>
-			<config>
-				<!-- speaker -->
-				<out name="speaker-amp" bank="C" index="7" default="on"/>
-			</config>
-		</start>
++ start platform | caps: 200 | ram: 2M | managing_system: yes | priority: -1
+  + binary a64_platform
+  + provides
+    + service Platform
+    + service Scp
+  + route | + any-service | + parent
+  + config | devices: yes
+    + policy | label_prefix: a64_pio ->
+      + device pio
+    + policy | label_prefix: audio_control ->
+      + device audio_codec
+      + device audio_analog
+      + device audio_codec_soc
+    + policy | label_prefix: audio -> | info: yes
+      + device audio_interface
+      + device dma_controller
 
-		<start name="audio_control" priority="-1">
-			<binary name="pinephone_audio_control"/>
-			<config>
-				<mic      volume="60"/>
-				<earpiece volume="100"/>
-				<speaker  volume="20"/>
-				<codec    target="soc"/>
-			</config>
-			<route>
-				<service name="Platform"> <child name="platform"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
++ start a64_pio | priority: -1
+  + provides
+    + service Pin_state
+    + service Pin_control
+    + service IRQ
+  + route
+    + service ROM      | + parent
+    + service CPU      | + parent
+    + service PD       | + parent
+    + service LOG      | + parent
+    + service Platform | + child platform
+  + config
+    + out speaker-amp | bank: C | index: 7 | default: on | . speaker
 
-		<start name="mixer" ram="2M" priority="0">
-			<binary name="record_play_mixer"/>
-			<provides> <service name="Record"/> <service name="Play"/> </provides>
-			<config jitter_ms="10">
++ start audio_control | priority: -1
+  + binary pinephone_audio_control
+  + config
+    + mic      | volume: 60
+    + earpiece | volume: 100
+    + speaker  | volume: 20
+    + codec    | target: soc
+  + route
+    + service Platform | + child platform
+    + any-service      | + parent
 
-				<mix name="left">  <play label="waveform_player -> left" /> </mix>
-				<mix name="right"> <play label="waveform_player -> right"/> </mix>
++ start mixer | ram: 2M | priority: 0
+  + binary record_play_mixer
+  + provides
+    + service Record
+    + service Play
+  + config | jitter_ms: 10
+    + mix left      | + play | label: waveform_player -> left
+    + mix right     | + play | label: waveform_player -> right
+    + mix mic_left  | x play | label: audio -> mic_left
+    + mix mic_right | x play | label: audio -> mic_right
+    + policy | label: audio -> left  | record: left  | volume: 0.6
+    + policy | label: audio -> right | record: right | volume: 0.0
 
-				<mix name="mic_left">  <!-- <play label="audio -> mic_left"/>  --> </mix>
-				<mix name="mic_right"> <!-- <play label="audio -> mic_right"/> --> </mix>
++ start waveform_player | priority: 0
+  + config | period_ms: 11
+    + play | label: left  | wave: sine   | hz: 1000 | sample_rate_hz: 44100
+    + play | label: right | wave: square | hz: 1000 | sample_rate_hz: 44100
+  + route
+    + any-service
+      + parent
+      + any-child
 
-				<policy label="audio -> left"  record="left"  volume="0.6"/>
-				<policy label="audio -> right" record="right" volume="0.0"/>
-			</config>
-		</start>
-
-		<start name="waveform_player" priority="0">
-			<config period_ms="11">
-				<play label="left"  wave="sine"   hz="1000" sample_rate_hz="44100"/>
-				<play label="right" wave="square" hz="1000" sample_rate_hz="44100"/>
-			</config>
-			<route>
-				<any-service> <parent/> <any-child/> </any-service>
-			</route>
-		</start>
-
-		<start name="audio" priority="0">
-			<binary name="a64_audio"/>
-			<config record_play="yes"/>
-			<route>
-				<service name="Platform"> <child name="platform"/> </service>
-				<service name="Record">   <child name="mixer"/> </service>
-				<service name="Play">     <child name="mixer"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
-	</config>
++ start audio | priority: 0
+  + binary a64_audio
+  + config | record_play: yes
+  + route
+    + service Platform | + child platform
+    + service Record   | + child mixer
+    + service Play     | + child mixer
+    + any-service      | + parent
+-
 }
 
 file copy [select_from_repositories board/[board]/devices] [run_dir]/genode/devices

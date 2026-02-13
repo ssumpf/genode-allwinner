@@ -89,265 +89,207 @@ create_boot_directory
 
 proc modem_config { } {
 
-	set at_protocol_attr {at_protocol="no"}
+	set at_protocol_attr { | at_protocol: no}
 	set sim_pin_attr     {}
 	set call_node        {}
 
 	if {![interactive_at_control]} {
-		set at_protocol_attr {at_protocol="yes"}
-		set sim_pin_attr     "pin=\"[sim_pin]\""
+		set at_protocol_attr " | at_protocol: yes"
+		set sim_pin_attr     " | pin: [sim_pin]"
 	}
 
 	if {[call_number] != ""} {
-		set call_node "<call number=\"[call_number]\"/>"
+		set call_node "\n    + call | number: [call_number]"
 	}
 
-	return "<config verbose=\"no\" power=\"on\" $at_protocol_attr $sim_pin_attr>
-	          $call_node
-	        </config>"
+	append config "+ config | verbose: no | power: on" \
+	              $at_protocol_attr $sim_pin_attr $call_node
+	return $config
 }
 
 
-proc uart_log_start_node { } {
+append uart_log_start_node {
++ start uart_log | ram: 2M
+  + binary ns16550_uart
+  + config | carriage_return: true
+  + route
+    + service Terminal | + child terminal_crosslink
+    + service Platform | + child platform
+    + any-service      | + parent}
 
-	if {![interactive_at_control]} { return "" }
-
-	return {
-		<start name="uart_log" ram="2M">
-			<binary name="ns16550_uart"/>
-			<config carriage_return="true"/>
-			<route>
-				<service name="Terminal"> <child name="terminal_crosslink"/> </service>
-				<service name="Platform"> <child name="platform"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
-	}
-}
+if {![interactive_at_control]} { set uart_log_start_node {} }
 
 
-proc network_related_start_nodes { } {
+append network_related_start_nodes {
++ start usb_host | caps: 200 | ram: 16M
+  + binary a64_usb_host
+  + provides | + service Usb
+  + config
+    + policy | label_prefix: cdc_ether
+      + device | vendor_id: 0x2c7c | product_id: 0x0125
+  + route
+    + service Timer            | + child timer
+    + service Platform         | + child platform
+    + service ROM | label: dtb | + parent | label: usb-pinephone.dtb
+    + any-service              | + parent
 
-	if {![test_network_connectivity]} { return "" }
++ start cdc_ether | caps: 200 | ram: 20M
+  + binary usb_net
+  + config | mac: 02:00:00:00:01:05 | ld_verbose: yes
+  + route
+    + service Uplink | + child nic_router
+    + any-service
+      + parent
+      + any-child
 
-	return {
-		<start name="usb_host" caps="200" ram="16M">
-			<binary name="a64_usb_host"/>
-			<provides> <service name="Usb"/> </provides>
-			<config>
-				<policy label_prefix="cdc_ether">
-					<device vendor_id="0x2c7c" product_id="0x0125"/>
-				</policy>
-			</config>
-			<route>
-				<service name="Timer"> <child name="timer"/> </service>
-				<service name="Platform"> <child name="platform"/> </service>
-				<service name="ROM" label="dtb">
-					<parent label="usb-pinephone.dtb"/> </service>
++ start nic_router | caps: 200 | ram: 10M
+  + provides
+    + service Nic
+    + service Uplink
+  + config | verbose_domain_state: yes | dhcp_discover_timeout_sec: 10
+                                       | dhcp_request_timeout_sec:  6
+    + policy | label_prefix: ping      | domain: downlink
+    + policy | label_prefix: cdc_ether | domain: uplink
+    + domain uplink
+      + nat | domain: downlink | tcp-ports: 16384 | icmp-ids: 1000
+      + tcp-forward | port: 443 | domain: downlink | to: 10.0.3.2
+      + tcp-forward | port:  80 | domain: downlink | to: 10.0.3.2
+    + domain downlink | interface: 10.0.3.1/24
+      + dhcp-server | ip_first: 10.0.3.2 | ip_last:  10.0.3.2
+      + icmp | dst: 0.0.0.0/0 | domain: uplink
 
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
++ start ping | ram: 8M
+  + config | period_sec: 5 | verbose: no | count: 100 | dst_ip: 94.130.141.228
+  + route
+    + service Nic | + child nic_router
+    + any-service
+      + parent
+      + any-child}
 
-		<start name="cdc_ether" caps="200" ram="20M">
-			<binary name="usb_net"/>
-			<config mac="02:00:00:00:01:05" ld_verbose="yes"/>
-			<route>
-				<service name="Uplink"><child name="nic_router"/></service>
-				<any-service> <parent/> <any-child/> </any-service>
-			</route>
-		</start>
-
-		<start name="nic_router" caps="200" ram="10M">
-			<provides>
-				<service name="Nic"/>
-				<service name="Uplink"/>
-			</provides>
-			<config verbose_domain_state="yes"
-			 dhcp_discover_timeout_sec="10"
-			 dhcp_request_timeout_sec="6">
-
-				<policy label_prefix="ping"       domain="downlink"/>
-				<policy label_prefix="cdc_ether"  domain="uplink"/>
-
-				<domain name="uplink">
-
-					<nat domain="downlink" tcp-ports="16384" icmp-ids="1000"/>
-					<tcp-forward port="443" domain="downlink" to="10.0.3.2"/>
-					<tcp-forward port="80"  domain="downlink" to="10.0.3.2"/>
-
-				</domain>
-
-				<domain name="downlink" interface="10.0.3.1/24">
-					<dhcp-server ip_first="10.0.3.2" ip_last="10.0.3.2"/>
-					<icmp dst="0.0.0.0/0" domain="uplink"/>
-				</domain>
-
-			</config>
-		</start>
-
-		<start name="ping" ram="8M">
-			<config period_sec="5"
-			        verbose="no"
-			        count="100"
-			        dst_ip="94.130.141.228" />
-			<route>
-				<service name="Nic"> <child name="nic_router"/> </service>
-				<any-service> <parent/> <any-child/> </any-service>
-			</route>
-		</start>
-	}
-}
+if {![test_network_connectivity]} { set network_related_start_nodes {} }
 
 
 install_config {
-	<config verbose="yes">
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="RM"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-			<service name="TRACE"/>
-		</parent-provides>
+config | verbose: yes
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service RM
+  + service ROM
+  + service IO_MEM
+  + service IRQ
+  + service TRACE
 
-		<default caps="100" ram="1M"/>
-		<default-route>
-			<any-service> <parent/> <any-child/> </any-service>
-		</default-route>
++ default | caps: 100 | ram: 1M
 
-		<start name="timer">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Timer"/> </provides>
-		</start>
++ default-route
+  + any-service
+    + parent
+    + any-child
 
-		<start name="report_rom">
-			<provides> <service name="Report"/> <service name="ROM"/> </provides>
-			<config verbose="yes"/>
-		</start>
++ start timer
+  + route | + any-service | + parent
+  + provides | + service Timer
 
-		<start name="platform" caps="200" ram="1M" managing_system="yes">
-			<binary name="a64_platform"/>
-			<provides> <service name="Platform"/> <service name="Scp"/> </provides>
-			<config>
-				<policy label="uart_log -> ">
-					<device name="uart0"/>
-				</policy>
-				<policy label="uart_phone -> ">
-					<device name="uart3"/>
-				</policy>
-				<policy label="a64_pio -> ">
-					<device name="pio"/>
-				</policy>
-				<policy label="audio_control -> ">
-					<device name="audio_codec"/>
-					<device name="audio_analog"/>
-					<device name="audio_codec_modem"/>
-				</policy>
-				<policy label="usb_host -> " info="yes">
-					<device name="ehci1"/>
-					<device name="usb_phy"/>
-				</policy>
-			</config>
-			<route> <any-service> <parent/> </any-service> </route>
-		</start>
++ start report_rom
+  + provides
+    + service Report
+    + service ROM
+  + config | verbose: yes
 
-		<start name="a64_pio">
-			<provides>
-				<service name="Pin_state"/>
-				<service name="Pin_control"/>
-				<service name="IRQ"/>
-			</provides>
-			<route>
-				<service name="ROM"> <parent/> </service>
-				<service name="CPU"> <parent/> </service>
-				<service name="PD">  <parent/> </service>
-				<service name="LOG"> <parent/> </service>
-				<service name="Platform"> <child name="platform"/> </service>
-			</route>
-			<config>
++ start platform | caps: 200 | ram: 1M | managing_system: yes
+  + binary a64_platform
+  + provides
+    + service Platform
+    + service Scp
+  + route | + any-service | + parent
+  + config
+    + policy | label_prefix: uart_log ->
+      + device uart0
+    + policy | label_prefix: uart_phone ->
+      + device uart3
+    + policy | label_prefix: a64_pio ->
+      + device pio
+    + policy | label_prefix: audio_control ->
+      + device audio_codec
+      + device audio_analog
+      + device audio_codec_modem
+    + policy | label_prefix: usb_host -> | info: yes
+      + device ehci1
+      + device usb_phy
 
-				<!-- modem -->
-				<out name="4g-pwr-bat" bank="L" index="7" />
-				<out name="dtr"        bank="B" index="2" />
-				<out name="enable"     bank="H" index="8" />
-				<out name="host-ready" bank="H" index="7" />
-				<out name="pwrkey"     bank="B" index="3" />
-				<out name="reset"      bank="C" index="4" />
++ start a64_pio
+  + provides
+    + service Pin_state
+    + service Pin_control
+    + service IRQ
+  + route
+    + service ROM      | + parent
+    + service CPU      | + parent
+    + service PD       | + parent
+    + service LOG      | + parent
+    + service Platform | + child platform
+  + config
+    + out    4g-pwr-bat    | bank: L | index: 7               | . modem
+    + out    dtr           | bank: B | index: 2
+    + out    enable        | bank: H | index: 8
+    + out    host-ready    | bank: H | index: 7
+    + out    pwrkey        | bank: B | index: 3
+    + out    reset         | bank: C | index: 4
+    + in     status        | bank: H | index: 9 | pull: up
+    + in     ri            | bank: L | index: 6
+    + select modem-uart_tx | bank: D | index: 0 | function: 3 | . select uart3
+    + select modem-uart_rx | bank: D | index: 1 | function: 3
+    + select aif2-sync     | bank: B | index: 4 | function: 2 | . AIF2 pins
+    + select aif2-blk      | bank: B | index: 5 | function: 2
+    + select aif2-dout     | bank: B | index: 6 | function: 2
+    + select aif2-din      | bank: B | index: 7 | function: 2
+    + out    speaker-amp   | bank: C | index: 7 | default: on | . speaker
+    .
+    + policy | label: modem -> battery    | pin: 4g-pwr-bat
+    + policy | label: modem -> dtr        | pin: dtr
+    + policy | label: modem -> enable     | pin: enable
+    + policy | label: modem -> host-ready | pin: host-ready
+    + policy | label: modem -> pwrkey     | pin: pwrkey
+    + policy | label: modem -> reset      | pin: reset
+    + policy | label: modem -> ri         | pin: ri
+    + policy | label: modem -> status     | pin: status
 
-				<in name="status"  bank="H" index="9" pull="up"/>
-				<in name="ri"      bank="L" index="6"/>
++ start audio_control
+  + binary pinephone_audio_control
+  + config
+    + mic      | volume: 80
+    + earpiece | volume: 100
+    + speaker  | volume: 100
+    + codec    | target: modem
+  + route
+    + service Platform | + child platform
+    + any-service | + parent
 
-				<policy label="modem -> battery"    pin="4g-pwr-bat"/>
-				<policy label="modem -> dtr"        pin="dtr"/>
-				<policy label="modem -> enable"     pin="enable"/>
-				<policy label="modem -> host-ready" pin="host-ready"/>
-				<policy label="modem -> pwrkey"     pin="pwrkey"/>
-				<policy label="modem -> reset"      pin="reset"/>
-				<policy label="modem -> ri"         pin="ri"/>
-				<policy label="modem -> status"     pin="status"/>
++ start modem
+  + binary pinephone_modem
+  } [modem_config] {
+  + route
+    + service Timer       | + child timer
+    + service Report      | + child report_rom
+    + service Pin_control | + child a64_pio
+    + service Pin_state   | + child a64_pio
+    + service Terminal    | + child terminal_crosslink
+    + any-service         | + parent
 
-				<!-- select uart3 -->
-				<select name="modem-uart_tx"  bank="D" index="0" function="3"/>
-				<select name="modem-uart_rx"  bank="D" index="1" function="3"/>
++ start terminal_crosslink
+  + provides | + service Terminal
 
-				<!-- AIF2 pins -->
-				<select name="aif2-sync" bank="B" index="4" function="2"/>
-				<select name="aif2-blk"  bank="B" index="5" function="2"/>
-				<select name="aif2-dout" bank="B" index="6" function="2"/>
-				<select name="aif2-din"  bank="B" index="7" function="2"/>
++ start uart_phone | ram: 2M
+  + binary ns16550_uart
+  + route
+    + service Terminal | + child terminal_crosslink
+    + service Platform | + child platform
+    + any-service      | + parent
 
-				<!-- speaker -->
-				<out name="speaker-amp" bank="C" index="7" default="on"/>
-			</config>
-		</start>
-
-		<start name="audio_control">
-			<binary name="pinephone_audio_control"/>
-			<config>
-				<mic      volume="80"/>
-				<earpiece volume="100"/>
-				<speaker  volume="100"/>
-				<codec    target="modem"/>
-			</config>
-			<route>
-				<service name="Platform"> <child name="platform"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
-
-		<start name="modem">
-			<binary name="pinephone_modem"/>
-			} [modem_config] {
-			<route>
-				<service name="Timer">       <child name="timer"/>              </service>
-				<service name="Report">      <child name="report_rom"/>         </service>
-				<service name="Pin_control"> <child name="a64_pio"/>            </service>
-				<service name="Pin_state">   <child name="a64_pio"/>            </service>
-				<service name="Terminal">    <child name="terminal_crosslink"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
-
-		<start name="terminal_crosslink">
-			<provides> <service name="Terminal"/> </provides>
-		</start>
-
-		<start name="uart_phone" ram="2M">
-			<binary name="ns16550_uart"/>
-			<route>
-				<service name="Terminal"> <child name="terminal_crosslink"/> </service>
-				<service name="Platform"> <child name="platform"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
-
-		} [uart_log_start_node] {
-		} [network_related_start_nodes] {
-
-	</config>
+} $uart_log_start_node $network_related_start_nodes {
+-
 }
 
 file copy [select_from_repositories board/[board]/devices] [run_dir]/genode/devices

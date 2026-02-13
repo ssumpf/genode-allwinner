@@ -10,110 +10,95 @@ build {
 create_boot_directory
 
 install_config {
-	<config verbose="yes">
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-		</parent-provides>
+config | verbose: yes
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service ROM
+  + service IO_MEM
+  + service IRQ
 
-		<default caps="100" ram="1M"/>
++ default | caps: 100 | ram: 1M
 
-		<start name="timer">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Timer"/> </provides>
-		</start>
++ start timer
+  + route | + any-service | + parent
+  + provides | + service Timer
 
-		<start name="report_rom">
-			<provides> <service name="Report"/> <service name="ROM"/> </provides>
-			<config verbose="yes">
-				<default-policy report="usb -> usb -> devices"/>
-			</config>
-			<route>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
++ start report_rom
+  + provides
+    + service Report
+    + service ROM
+  + route | + any-service | + parent
+  + config | verbose: yes
+    + default-policy | report: usb -> usb -> devices
 
-		<start name="platform" caps="150" managing_system="yes">
-			<binary name="a64_platform"/>
-			<provides> <service name="Platform"/> <service name="Scp"/> </provides>
-			<config devices_rom="config">
-				<device name="usb_phy">
-					<io_mem address="0x01c19400" size="0x14"/>
-					<io_mem address="0x01c1a800" size="0x4"/>
-					<io_mem address="0x01c1b800" size="0x4"/>
-					<clock name="usb-phy1"/>
-					<reset-domain name="usb-phy1"/>
-				</device>
-				<device name="ehci1">
-					<io_mem address="0x01c1b000" size="0x100"/>
-					<irq number="106"/>
-					<clock name="bus-ohci1"/>
-					<clock name="bus-ehci1"/>
-					<clock name="ohci1"/>
-					<reset-domain name="ehci1"/>
-					<reset-domain name="ohci1"/>
-				</device>
-				<policy label="usb_host -> " info="yes">
-					<device name="ehci1"/>
-					<device name="usb_phy"/>
-				</policy>
-			</config>
-			<route>
-				<service name="Timer"> <child name="timer"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
++ start platform | caps: 150 | managing_system: yes
+  + binary a64_platform
+  + provides
+    + service Platform
+    + service Scp
+  + route
+    + service Timer | + child timer
+    + any-service   | + parent
+  + config | devices_rom: config
+    + device usb_phy
+      + io_mem | address: 0x01c19400 | size: 0x14
+      + io_mem | address: 0x01c1a800 | size: 0x4
+      + io_mem | address: 0x01c1b800 | size: 0x4
+      + clock        usb-phy1
+      + reset-domain usb-phy1
+    + device ehci1
+      + io_mem | address: 0x01c1b000 | size: 0x100
+      + irq    | number: 106
+      + clock        bus-ohci1
+      + clock        bus-ehci1
+      + clock        ohci1
+      + reset-domain ehci1
+      + reset-domain ohci1
+    + policy | label_prefix: usb_host -> | info: yes
+      + device ehci1
+      + device usb_phy
 
-		<start name="usb_host" caps="200" ram="16M">
-			<binary name="a64_usb_host"/>
-			<provides> <service name="Usb"/> </provides>
-			<config>
-				<report devices="yes"/>
-				<default-policy class="0x8"/>
-			</config>
-			<route>
-				<service name="Timer"> <child name="timer"/> </service>
-				<service name="Report"> <child name="report_rom"/> </service>
-				<service name="Platform"> <child name="platform"/> </service>
-				<service name="ROM" label="dtb">
-					<parent label="usb-} [board] {.dtb"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-		</start>
++ start usb_host | caps: 200 | ram: 16M
+  + binary a64_usb_host
+  + provides | + service Usb
+  + config
+    + report | devices: yes
+    + default-policy | class: 0x8
+  + route
+    + service Timer            | + child timer
+    + service Report           | + child report_rom
+    + service Platform         | + child platform
+    + service ROM | label: dtb | + parent | label: usb-} [board] {.dtb
+    + any-service              | + parent
 
-		<start name="usb_block" ram="4M">
-			<provides> <service name="Block"/> </provides>
-			<!-- XXX the label is probably only valid when a USB storage device
-			         is plugged in directly to the second port of the LTS board -->
-			<config report="yes" writeable="no" label="usb-1-2"/>
-			<route>
-				<service name="Usb"> <child name="usb_host"/> </service>
-				<service name="Report"> <child name="report_rom"/> </service>
-				<any-service> <parent/> <any-child/> </any-service>
-			</route>
-		</start>
++ start usb_block | ram: 4M
+  + provides | + service Block
+  + config | report: yes | writeable: no | label: usb-1-2
+    .
+    . Note, the label is probably only valid when a USB storage device
+    . is plugged in directly to the second port of the LTS board.
+    .
+  + route
+    + service Usb    | + child usb_host
+    + service Report | + child report_rom
+    + any-service
+      + parent
+      + any-child
 
-		<start name="block_tester" ram="64M">
-			<config verbose="no" report="no" log="yes" stop_on_error="no">
-				<tests>
-					<sequential length="256M" write="no" size="1M" io_buffer="8M" batch="4"/>
-				</tests>
-			</config>
-			<route>
-				<service name="ROM"> <parent/> </service>
-				<service name="PD">  <parent/> </service>
-				<service name="RM">  <parent/> </service>
-				<service name="CPU"> <parent/> </service>
-				<service name="LOG"> <parent/> </service>
-				<any-service> <any-child/> </any-service>
-			</route>
-		</start>
-
-	</config>
++ start block_tester | ram: 64M
+  + route
+    + service ROM | + parent
+    + service PD  | + parent
+    + service RM  | + parent
+    + service CPU | + parent
+    + service LOG | + parent
+    + any-service | + any-child
+  + config | verbose: no | report: no | log: yes | stop_on_error: no
+    + tests
+      + sequential | length: 256M | write: no | size: 1M | io_buffer: 8M | batch: 4
+-
 }
 
 build_boot_image [build_artifacts]

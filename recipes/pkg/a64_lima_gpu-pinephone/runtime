@@ -1,17 +1,15 @@
-<runtime ram="256M" caps="500" binary="lima_gpu">
+runtime | ram: 256M | caps: 500 | binary: lima_gpu
 
-	<requires>
-		<timer/>
-		<platform label="gpu"/>
-	</requires>
++ requires
+  + timer
+  + platform | label: gpu
 
-	<provides> <gpu/> </provides>
++ provides
+  + gpu
 
-	<config dtb="lima-pinephone.dtb"/>
++ config | dtb: lima-pinephone.dtb
 
-	<content>
-		<rom label="lima_gpu"/>
-		<rom label="lima-pinephone.dtb"/>
-	</content>
-
-</runtime>
++ content
+  + rom | label: lima_gpu
+  + rom | label: lima-pinephone.dtb
+-

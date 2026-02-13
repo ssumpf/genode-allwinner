@@ -3,22 +3,20 @@ build { core lib/ld init test/pin_interrupt }
 create_boot_directory
 
 install_config {
-	<config>
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-		</parent-provides>
+config
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service ROM
+  + service IO_MEM
+  + service IRQ
 
-		<default caps="100" ram="1M"/>
++ default | caps: 100 | ram: 1M
 
-		<start name="test-pin_interrupt">
-			<route> <any-service> <parent/> </any-service> </route>
-		</start>
-	</config>
++ start test-pin_interrupt
+  + route | + any-service | + parent
+-
 }
 
 build_boot_image [build_artifacts]

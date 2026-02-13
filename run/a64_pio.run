@@ -4,120 +4,97 @@ build { core lib/ld init timer driver/platform driver/pin/a64
 create_boot_directory
 
 install_config {
-	<config>
-		<parent-provides>
-			<service name="LOG"/>
-			<service name="PD"/>
-			<service name="CPU"/>
-			<service name="ROM"/>
-			<service name="IO_MEM"/>
-			<service name="IRQ"/>
-		</parent-provides>
+config
++ parent-provides
+  + service LOG
+  + service PD
+  + service CPU
+  + service ROM
+  + service IO_MEM
+  + service IRQ
 
-		<default caps="100" ram="1M"/>
++ default | caps: 100 | ram: 1M
 
-		<start name="timer">
-			<route> <any-service> <parent/> </any-service> </route>
-			<provides> <service name="Timer"/> </provides>
-		</start>
++ start timer
+  + route | + any-service | + parent
+  + provides | + service Timer
 
-		<start name="platform" caps="150" managing_system="yes">
-			<provides> <service name="Platform"/> </provides>
-			<route> <any-service> <parent/> </any-service> </route>
-			<config devices_rom="config">
-				<device name="pio">
-					<io_mem address="0x1c20800" size="0x400"/> <!-- Ports A-H -->
-					<io_mem address="0x1f02c00" size="0x400"/> <!-- Port L -->
-					<irq number="43"/> <!-- Port B -->
-					<irq number="49"/> <!-- Port G -->
-					<irq number="53"/> <!-- Port H -->
-					<irq number="77"/> <!-- Port L -->
-				</device>
-				<policy label="a64_pio -> ">
-					<device name="pio"/>
-				</policy>
-			</config>
-		</start>
++ start platform | caps: 150 | managing_system: yes
+  + provides | + service Platform
+  + route | + any-service | + parent
+  + config | devices_rom: config
+    + policy | label: a64_pio -> | + device pio
+    + device pio
+      + io_mem | address: 0x1c20800 | size: 0x400 | . Ports A-H
+      + io_mem | address: 0x1f02c00 | size: 0x400 | . Port L
+      + irq    | number: 43                       | . Port B
+      + irq    | number: 49                       | . Port G
+      + irq    | number: 53                       | . Port H
+      + irq    | number: 77                       | . Port L
 
-		<start name="dynamic_rom">
-			<provides> <service name="ROM"/> </provides>
-			<route>
-				<service name="Timer"> <child name="timer"/> </service>
-				<any-service> <parent/> </any-service>
-			</route>
-			<config verbose="yes">
-				<rom name="config">
-					<inline description="LED pulse">
-						<config>
-							<out name="led"    bank="B" index="2"/>
-							<in  name="button" bank="H" index="8" pull="up" irq="edges"/>
-							<policy label_prefix="pin_event ->" pin="button"/>
-							<policy label_prefix="pin_pulse ->" pin="led"/>
-						</config>
-					</inline>
-					<sleep milliseconds="5000" />
-					<inline description="LED off">
-						<config>
-							<out name="led"    bank="B" index="2" default="off"/>
-							<in  name="button" bank="H" index="8" pull="up" irq="edges"/>
-							<policy label_prefix="pin_event ->" pin="button"/>
-						</config>
-					</inline>
-					<sleep milliseconds="1000" />
-					<inline description="LED on">
-						<config>
-							<out name="led"    bank="B" index="2" default="on"/>
-							<in  name="button" bank="H" index="8" pull="up" irq="edges"/>
-							<policy label_prefix="pin_event ->" pin="button"/>
-						</config>
-					</inline>
-					<sleep milliseconds="1000" />
-				</rom>
-			</config>
-		</start>
++ start dynamic_rom
+  + provides | + service ROM
+  + route
+    + service Timer | + child timer
+    + any-service | + parent
+  + config | verbose: yes
+    + rom config
+      + inline | description: LED pulse
+      | + config
+      |   + out led    | bank: B | index: 2
+      |   + in  button | bank: H | index: 8 | pull: up | irq: edges
+      |   + policy | label_prefix: pin_event -> | pin: button
+      |   + policy | label_prefix: pin_pulse -> | pin: led
+      |
+      + sleep  | milliseconds: 5000
+      + inline | description: LED off
+      | + config
+      |   + out led    | bank: B | index: 2 | default: off
+      |   + in  button | bank: H | index: 8 | pull: up | irq: edges
+      |   + policy | label_prefix: pin_event -> | pin: button
+      |
+      + sleep  | milliseconds: 1000
+      + inline | description: LED on
+      | + config
+      |   + out led    | bank: B | index: 2 | default: on
+      |   + in  button | bank: H | index: 8 | pull: up | irq: edges
+      |   + policy | label_prefix: pin_event -> | pin: button
+      |
+      + sleep  | milliseconds: 1000
 
-		<start name="a64_pio">
-			<provides>
-				<service name="Pin_state"/>
-				<service name="Pin_control"/>
-				<service name="IRQ"/>
-			</provides>
-			<route>
-				<service name="ROM" label="config">
-					<child name="dynamic_rom"/> </service>
-				<service name="ROM"> <parent/> </service>
-				<service name="CPU"> <parent/> </service>
-				<service name="PD">  <parent/> </service>
-				<service name="LOG"> <parent/> </service>
-				<service name="Platform"> <child name="platform"/> </service>
-			</route>
-		</start>
++ start a64_pio
+  + provides
+    + service Pin_state
+    + service Pin_control
+    + service IRQ
+  + route
+    + service ROM | label: config | + child dynamic_rom
+    + service ROM                 | + parent
+    + service CPU                 | + parent
+    + service PD                  | + parent
+    + service LOG                 | + parent
+    + service Platform            | + child platform
 
-		<start name="pin_pulse">
-			<route>
-				<service name="Timer">       <child name="timer"/>   </service>
-				<service name="Pin_control"> <child name="a64_pio"/> </service>
-				<service name="ROM"> <parent/> </service>
-				<service name="CPU"> <parent/> </service>
-				<service name="PD">  <parent/> </service>
-				<service name="LOG"> <parent/> </service>
-			</route>
-			<config pulse_ms="500" pcm_period_ms="10"/>
-		</start>
++ start pin_pulse
+  + config | pulse_ms: 500 | pcm_period_ms: 10
+  + route
+    + service Timer       | + child timer
+    + service Pin_control | + child a64_pio
+    + service ROM         | + parent
+    + service CPU         | + parent
+    + service PD          | + parent
+    + service LOG         | + parent
 
-		<start name="pin_event">
-			<route>
-				<service name="Pin_state"> <child name="a64_pio"/> </service>
-				<service name="IRQ">       <child name="a64_pio"/> </service>
-				<service name="ROM"> <parent/> </service>
-				<service name="CPU"> <parent/> </service>
-				<service name="PD">  <parent/> </service>
-				<service name="LOG"> <parent/> </service>
-			</route>
-			<config/>
-		</start>
-
-	</config>
++ start pin_event
+  + config
+  + route
+    + service Pin_state | + child a64_pio
+    + service IRQ       | + child a64_pio
+    + service ROM       | + parent
+    + service CPU       | + parent
+    + service PD        | + parent
+    + service LOG       | + parent
+-
 }
 
 build_boot_image [build_artifacts]

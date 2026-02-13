@@ -12,108 +12,91 @@ build {
 }
 
 install_config {
-<config>
-	<parent-provides>
-		<service name="ROM"/>
-		<service name="IRQ"/>
-		<service name="IO_MEM"/>
-		<service name="PD"/>
-		<service name="RM"/>
-		<service name="CPU"/>
-		<service name="LOG"/>
-	</parent-provides>
-	<default-route>
-		<any-service> <parent/> <any-child/> </any-service>
-	</default-route>
-	<default caps="100" ram="1M"/>
+config
++ parent-provides
+  + service ROM
+  + service IRQ
+  + service IO_MEM
+  + service PD
+  + service RM
+  + service CPU
+  + service LOG
 
-	<start name="timer">
-		<provides><service name="Timer"/></provides>
-	</start>
++ default-route
+  + any-service
+    + parent
+    + any-child
 
-	<start name="event_dump">
-		<provides> <service name="Event"/> </provides>
-		<config/>
-	</start>
++ default | caps: 100 | ram: 1M
 
-	<start name="platform" caps="150" managing_system="yes">
-		<binary name="a64_platform"/>
-		<provides> <service name="Platform"/> <service name="Scp"/> </provides>
-		<config devices_rom="config">
++ start timer
+  + provides | + service Timer
 
-			<device name="pio">
-				<io_mem address="0x1c20800" size="0x400"/> <!-- Ports A-H -->
-				<io_mem address="0x1f02c00" size="0x400"/> <!-- Port L -->
-				<irq number="43"/> <!-- Port B -->
-				<irq number="49"/> <!-- Port G -->
-				<irq number="53"/> <!-- Port H -->
-				<irq number="77"/> <!-- Port L -->
-			</device>
++ start event_dump
+  + provides | + service Event
+  + config
 
-			<device name="i2c0" type="allwinner,sun6i-a31-i2c">
-				<io_mem address="0x01c2ac00" size="0x400"/>
-				<irq number="38"/>
-				<clock name="bus-i2s0" driver_name=""/>
-				<clock name="bus-twi0" driver_name=""/>
-				<reset-domain name="twi0"/>
-				<power-domain name="pmic-gpio0"/>
-			</device>
++ start platform | caps: 150 | managing_system: yes
+  + binary a64_platform
+  + provides
+    + service Platform
+    + service Scp
+  + route | + any-service | + parent
+  + config | devices_rom: config
+    + device pio
+      + io_mem | address: 0x1c20800 | size: 0x400 | . Ports A-H
+      + io_mem | address: 0x1f02c00 | size: 0x400 | . Port L
+      + irq    | number: 43                       | . Port B
+      + irq    | number: 49                       | . Port G
+      + irq    | number: 53                       | . Port H
+      + irq    | number: 77                       | . Port L
+    + device i2c0 | type: allwinner,sun6i-a31-i2c
+      + io_mem | address: 0x01c2ac00 | size:  0x400
+      + irq    | number: 38
+      + clock bus-i2s0 | driver_name:
+      + clock bus-twi0 | driver_name:
+      + reset-domain twi0
+      + power-domain pmic-gpio0
+    + policy | label_prefix: a64_pio ->
+      + device pio
+    + policy | label_prefix: goodix_touch -> | info: yes
+      + device i2c0
 
-			<policy label="a64_pio -> ">
-				<device name="pio"/>
-			</policy>
++ start a64_pio
+  + provides
+    + service Pin_state
+    + service Pin_control
+    + service IRQ
+  + route
+    + service ROM      | + parent
+    + service CPU      | + parent
+    + service PD       | + parent
+    + service LOG      | + parent
+    + service Platform | + child platform
+  + config
+    + select touchscreen-i2c-sck | bank: H | index: 0 | function: 2
+    + select touchscreen-i2c-sda | bank: H | index: 1 | function: 2
+    + out    touchscreen-int     | bank: H | index: 4
+    + in     touchscreen-int     | bank: H | index: 4 | irq: falling
+    + out    touchscreen-reset   | bank: H | index: 11
+    + policy | label: goodix_touch -> PH11 | pin: touchscreen-reset
+    + policy | label: goodix_touch -> PH4  | pin: touchscreen-int
 
-			<policy label="goodix_touch -> " info="yes">
-				<device name="i2c0"/>
-			</policy>
-
-		</config>
-		<route> <any-service> <parent/> </any-service> </route>
-	</start>
-
-	<start name="a64_pio">
-		<provides>
-			<service name="Pin_state"/>
-			<service name="Pin_control"/>
-			<service name="IRQ"/>
-		</provides>
-		<route>
-			<service name="ROM"> <parent/> </service>
-			<service name="CPU"> <parent/> </service>
-			<service name="PD">  <parent/> </service>
-			<service name="LOG"> <parent/> </service>
-			<service name="Platform"> <child name="platform"/> </service>
-		</route>
-		<config>
-			<select name="touchscreen-i2c-sck"  bank="H" index="0" function="2"/>
-			<select name="touchscreen-i2c-sda"  bank="H" index="1" function="2"/>
-			<out    name="touchscreen-int"      bank="H" index="4"/>
-			<in     name="touchscreen-int"      bank="H" index="4" irq="falling"/>
-			<out    name="touchscreen-reset"    bank="H" index="11"/>
-
-			<policy label="goodix_touch -> PH11" pin="touchscreen-reset"/>
-			<policy label="goodix_touch -> PH4"  pin="touchscreen-int"/>
-		</config>
-	</start>
-
-	<start name="goodix_touch" caps="250" ram="40M">
-		<route>
-			<service name="ROM" label="dtb"> <parent label="goodix-pinephone.dtb"/> </service>
-			<service name="RM">          <parent/> </service>
-			<service name="ROM">         <parent/> </service>
-			<service name="PD">          <parent/> </service>
-			<service name="CPU">         <parent/> </service>
-			<service name="LOG">         <parent/> </service>
-			<service name="Timer">       <child name="timer"/>      </service>
-			<service name="Platform">    <child name="platform"/>   </service>
-			<service name="Event">       <child name="event_dump"/> </service>
-			<service name="Pin_control"> <child name="a64_pio"/>    </service>
-			<service name="IRQ">
-				<child name="a64_pio" label="goodix_touch -> PH4"/> </service>
-		</route>
-	</start>
-
-</config>}
++ start goodix_touch | caps: 250 | ram: 40M
+  + route
+    + service ROM | label: dtb | + parent | label: goodix-pinephone.dtb
+    + service RM               | + parent
+    + service ROM              | + parent
+    + service PD               | + parent
+    + service CPU              | + parent
+    + service LOG              | + parent
+    + service Timer            | + child timer
+    + service Platform         | + child platform
+    + service Event            | + child event_dump
+    + service Pin_control      | + child a64_pio
+    + service IRQ              | + child a64_pio | label: goodix_touch -> PH4
+-
+}
 
 build_boot_image [build_artifacts]
 

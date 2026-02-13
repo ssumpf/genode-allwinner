@@ -1,10 +1,9 @@
-<launcher name="screenshot" pkg="ssumpf/pkg/screenshot_with_trigger/2025-10-10" priority="-2">
-	<route>
-		<service name="Gui" label="trigger"> <parent label="overlay"/> </service>
-		<service name="Gui"> <parent/> </service>
-		<service name="Capture"> <parent label="global"/>  </service>
-		<service name="Event">   <parent label="global"/>  </service>
-		<service name="File_system" label_prefix="target ->"> <child name="default_fs_rw"/> </service>
-		<service name="Rtc"> <child name="system_clock-dummy"/> </service>
-	</route>
-</launcher>
+launcher screenshot | pkg: ssumpf/pkg/screenshot_with_trigger/2025-10-10 | priority: -2
++ route
+  + service Gui | label: trigger                  | + parent | label: overlay
+  + service Gui                                   | + parent
+  + service Capture                               | + parent | label: global
+  + service Event                                 | + parent | label: global
+  + service File_system | label_prefix: target -> | + child default_fs_rw
+  + service Rtc                                   | + child system_clock-dummy
+-

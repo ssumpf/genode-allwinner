@@ -1,26 +1,20 @@
-<config arch="">
+config | arch:
 
-	<common_routes>
-		<service name="ROM" label_last="ld.lib.so"> <parent/> </service>
-		<service name="ROM" label_last="init">      <parent/> </service>
-		<service name="CPU">   <parent/> </service>
-		<service name="PD">    <parent/> </service>
-		<service name="LOG">   <parent/> </service>
-		<service name="Timer"> <parent/> </service>
-	</common_routes>
++ common_routes
+  + service ROM | label_last: ld.lib.so | + parent
+  + service ROM | label_last: init      | + parent
+  + service CPU                         | + parent
+  + service PD                          | + parent
+  + service LOG                         | + parent
+  + service Timer                       | + parent
 
-	<start name="gpu" pkg="a64_lima_gpu-pinephone">
-		<route>
-			<service name="Platform"> <parent label="gpu"/> </service>
-		</route>
-	</start>
++ start gpu | pkg: a64_lima_gpu-pinephone
+  + route
+    + service Platform | + parent | label: gpu
 
-	<start name="mesa_gears" pkg="mesa_gears">
-		<route>
-			<service name="Gui"> <parent label="focus"/> </service>
-			<service name="Gpu"> <child name="gpu"/> </service>
-			<service name="ROM" label="mesa_gpu.lib.so"> <parent label="mesa_gpu-lima.lib.so"/> </service>
-		</route>
-	</start>
-
-</config>
++ start mesa_gears | pkg: mesa_gears
+  + route
+    + service Gui                          | + parent | label: focus
+    + service Gpu                          | + child gpu
+    + service ROM | label: mesa_gpu.lib.so | + parent | label: mesa_gpu-lima.lib.so
+-

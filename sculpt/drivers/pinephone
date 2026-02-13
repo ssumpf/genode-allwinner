@@ -1,280 +1,220 @@
-<config>
-	<parent-provides>
-		<service name="IRQ"/>
-		<service name="IO_MEM"/>
-		<service name="ROM"/>
-		<service name="PD"/>
-		<service name="CPU"/>
-		<service name="LOG"/>
-		<service name="Timer"/>
-		<service name="Event"/>
-		<service name="Report"/>
-	</parent-provides>
+config
 
-	<default caps="100" ram="1M"/>
++ parent-provides
+  + service IRQ
+  + service IO_MEM
+  + service ROM
+  + service PD
+  + service CPU
+  + service LOG
+  + service Timer
+  + service Event
+  + service Report
 
-	<service name="Platform">
-		<default-policy> <child name="platform"/> </default-policy> </service>
++ default | caps: 100 | ram: 1M
 
-	<service name="Pin_control">
-		<default-policy> <child name="a64_pio"/> </default-policy> </service>
++ service Platform    | + default-policy | + child platform
++ service Pin_control | + default-policy | + child a64_pio
++ service Pin_state   | + default-policy | + child a64_pio
++ service IRQ         | + default-policy | + child a64_pio
 
-	<service name="Pin_state">
-		<default-policy> <child name="a64_pio"/> </default-policy> </service>
++ start platform | caps: 250 | ram: 3M | managing_system: yes
+  + binary a64_platform
+  + provides
+    + service Platform
+    + service Scp
+  + route | + any-service | + parent
+  + config
+    + policy | label: a64_pio ->
+      + device pio
+    + policy | label: runtime -> fb -> | info: yes
+      + device dphy
+      + device dsi
+      + device syscon
+      + device de2_bus
+      + device r_pwm
+      + device tcon0
+      + device tcon1
+    + policy | label: runtime -> touch -> | info: yes
+      + device i2c0
+    + policy | label: uart_modem ->
+      + device uart3
+    + policy | label: a64_pio ->
+      + device pio
+    + policy | label: audio_control ->
+      + device audio_codec
+      + device audio_analog
+      + device audio_codec_modem
+      + device audio_codec_soc
+    + policy | label: runtime -> usb -> | info: yes
+      + device ehci1
+      + device usb_phy
+    + policy | label: runtime -> mmc -> | info: yes
+      + device sd_card
+      + device emmc
+    + policy | label: runtime -> gpu | info: yes
+      + device gpu
+    + policy | label: runtime -> camera | info: yes
+      + device csi
+    + policy | label: runtime -> audio | info: yes
+      + device audio_interface
+      + device dma_controller
+    + policy | label: runtime -> wifi | info: yes
+      + device wifi_pwrseq
+      + device mmc1
+    + policy | label: power ->
+      + device rintc
+    + policy | label: button ->
+      + device keyadc
 
-	<service name="IRQ">
-		<default-policy> <child name="a64_pio"/> </default-policy> </service>
++ start a64_pio
+  + provides
+    + service Pin_state
+    + service Pin_control
+    + service IRQ
+  + route
+    + service ROM      | + parent
+    + service CPU      | + parent
+    + service PD       | + parent
+    + service LOG      | + parent
+    + service Platform | + child platform
+  + config
+    .
+    . touchscreen
+    .
+    + select touchscreen-i2c-sck | bank: H | index:  0 | function: 2
+    + select touchscreen-i2c-sda | bank: H | index:  1 | function: 2
+    + out    touchscreen-int     | bank: H | index:  4
+    + in     touchscreen-int     | bank: H | index:  4 | irq: falling
+    + out    touchscreen-reset   | bank: H | index: 11
+    + policy | label: runtime -> touch -> PH11 | pin: touchscreen-reset
+    + policy | label: runtime -> touch -> PH4  | pin: touchscreen-int
+    .
+    . display
+    .
+    + select lcd-pwm   | bank: L | index: 10 | function: 2
+    + out    backlight | bank: H | index: 10 | default: 0
+    + out    lcd-reset | bank: D | index: 23 | default: 0
+    + policy | label: runtime -> fb -> PH10 | pin: backlight
+    + policy | label: runtime -> fb -> PD23 | pin: lcd-reset
+    .
+    . modem
+    .
+    + select modem-uart_tx | bank: D | index: 0 | function: 3 | . select uart3
+    + select modem-uart_rx | bank: D | index: 1 | function: 3
+    + out    4g-pwr-bat    | bank: L | index: 7
+    + out    dtr           | bank: B | index: 2
+    + out    enable        | bank: H | index: 8
+    + out    host-ready    | bank: H | index: 7
+    + out    pwrkey        | bank: B | index: 3
+    + out    reset         | bank: C | index: 4
+    + in     status        | bank: H | index: 9 | pull: up
+    + in     ri            | bank: L | index: 6
+    + policy | label: modem -> battery    | pin: 4g-pwr-bat
+    + policy | label: modem -> dtr        | pin: dtr
+    + policy | label: modem -> enable     | pin: enable
+    + policy | label: modem -> host-ready | pin: host-ready
+    + policy | label: modem -> pwrkey     | pin: pwrkey
+    + policy | label: modem -> reset      | pin: reset
+    + policy | label: modem -> ri         | pin: ri
+    + policy | label: modem -> status     | pin: status
+    .
+    . AIF2 pins
+    .
+    + select aif2-sync   | bank: B | index: 4 | function: 2
+    + select aif2-blk    | bank: B | index: 5 | function: 2
+    + select aif2-dout   | bank: B | index: 6 | function: 2
+    + select aif2-din    | bank: B | index: 7 | function: 2
+    + out    speaker-amp | bank: C | index: 7 | default: on | . speaker
+    .
+    . camera
+    .
+    + select csi-pclk         | bank: E | index:  0 | function: 2
+    + select csi-mclk         | bank: E | index:  1 | function: 2
+    + select csi-hsync        | bank: E | index:  2 | function: 2
+    + select csi-vsync        | bank: E | index:  3 | function: 2
+    + select csi-d0           | bank: E | index:  4 | function: 2
+    + select csi-d1           | bank: E | index:  5 | function: 2
+    + select csi-d2           | bank: E | index:  6 | function: 2
+    + select csi-d3           | bank: E | index:  7 | function: 2
+    + select csi-d4           | bank: E | index:  8 | function: 2
+    + select csi-d5           | bank: E | index:  9 | function: 2
+    + select csi-d6           | bank: E | index: 10 | function: 2
+    + select csi-d7           | bank: E | index: 11 | function: 2
+    + out    csi-sck          | bank: E | index: 12
+    + in     csi-sck          | bank: E | index: 12
+    + out    csi-sda          | bank: E | index: 13
+    + in     csi-sda          | bank: E | index: 13
+    + out    gc2145-reset     | bank: E | index: 16
+    + out    gc2145-powerdown | bank: E | index: 17
+    + out    ov5460-powerdown | bank: C | index:  0
+    + out    ov5460-reset     | bank: D | index:  3
+    + in     ov5460-reset     | bank: D | index:  3
+    + policy | label_suffix: -> camera -> PC0  | pin: ov5460-powerdown
+    + policy | label_suffix: -> camera -> PD3  | pin: ov5460-reset
+    + policy | label_suffix: -> camera -> PE12 | pin: csi-sck
+    + policy | label_suffix: -> camera -> PE13 | pin: csi-sda
+    + policy | label_suffix: -> camera -> PE16 | pin: gc2145-reset
+    + policy | label_suffix: -> camera -> PE17 | pin: gc2145-powerdown
+    .
+    . wifi
+    .
+    + select sdc1_clk    | bank: G | index: 0 | function: 2
+    + select sdc1_cmd    | bank: G | index: 1 | function: 2
+    + select sdc1_d0     | bank: G | index: 2 | function: 2
+    + select sdc1_d1     | bank: G | index: 3 | function: 2
+    + select sdc1_d2     | bank: G | index: 4 | function: 2
+    + select sdc1_d3     | bank: G | index: 5 | function: 2
+    + out    wifi_pwrseq | bank: L | index: 2
+    + policy | label: runtime -> wifi -> PL2 | pin: wifi_pwrseq
 
-	<start name="platform" caps="250" ram="3M" managing_system="yes">
-		<binary name="a64_platform"/>
-		<provides> <service name="Platform"/> <service name="Scp"/> </provides>
-		<config>
++ start terminal_crosslink | caps: 100
+  + provides | + service Terminal
+  + route
+    + any-service | + parent
 
-			<policy label="a64_pio -> ">
-				<device name="pio"/>
-			</policy>
++ start modem | caps: 120
+  + binary pinephone_modem
+  + route
+    + service ROM | label: config | + parent | label: modem.config
+    + service Pin_control         | + child a64_pio
+    + service Pin_state           | + child a64_pio
+    + service Terminal            | + child terminal_crosslink
+    + service ROM                 | + parent
+    + service PD                  | + parent
+    + service CPU                 | + parent
+    + service LOG                 | + parent
+    + service Timer               | + parent
+    + service Report              | + parent
 
-			<policy label="runtime -> fb -> " info="yes">
-				<device name="dphy"/>
-				<device name="dsi"/>
-				<device name="syscon"/>
-				<device name="de2_bus"/>
-				<device name="r_pwm"/>
-				<device name="tcon0"/>
-				<device name="tcon1"/>
-			</policy>
++ start uart_modem | ram: 2M
+  + binary ns16550_uart
+  + route
+    + service Terminal | + child terminal_crosslink
+    + service Platform | + child platform
+    + any-service      | + parent
 
-			<policy label="runtime -> touch -> " info="yes">
-				<device name="i2c0"/>
-			</policy>
++ start audio_control
+  + binary pinephone_audio_control
+  + route
+    + service ROM | label: config | + parent | label: audio.config
+    + service Platform            | + child platform
+    + any-service                 | + parent
 
-			<policy label="uart_modem -> ">
-				<device name="uart3"/>
-			</policy>
++ start power
+  + binary pinephone_power
+  + config | period_ms: 10000 | system_rom: system
+  + route
+    + service Scp                 | + child platform
+    + service Platform            | + child platform
+    + service Report              | + parent | label: power
+    + service ROM | label: system | + parent | label: system
+    + any-service                 | + parent
 
-			<policy label="a64_pio -> ">
-				<device name="pio"/>
-			</policy>
-
-			<policy label="audio_control -> ">
-				<device name="audio_codec"/>
-				<device name="audio_analog"/>
-				<device name="audio_codec_modem"/>
-				<device name="audio_codec_soc"/>
-			</policy>
-
-			<policy label="runtime -> usb -> " info="yes">
-				<device name="ehci1"/>
-				<device name="usb_phy"/>
-			</policy>
-
-			<policy label="runtime -> mmc -> " info="yes">
-				<device name="sd_card"/>
-				<device name="emmc"/>
-			</policy>
-
-			<policy label="runtime -> gpu" info="yes">
-				<device name="gpu"/>
-			</policy>
-
-			<policy label="runtime -> camera" info="yes">
-				<device name="csi"/>
-			</policy>
-
-			<policy label="runtime -> audio" info="yes">
-				<device name="audio_interface"/>
-				<device name="dma_controller"/>
-			</policy>
-
-			<policy label="runtime -> wifi" info="yes">
-				<device name="wifi_pwrseq"/>
-				<device name="mmc1"/>
-			</policy>
-
-			<policy label="power -> ">
-				<device name="rintc"/>
-			</policy>
-
-			<policy label="button -> ">
-				<device name="keyadc"/>
-			</policy>
-
-		</config>
-		<route> <any-service> <parent/> </any-service> </route>
-	</start>
-
-	<start name="a64_pio">
-		<provides>
-			<service name="Pin_state"/>
-			<service name="Pin_control"/>
-			<service name="IRQ"/>
-		</provides>
-		<route>
-			<service name="ROM"> <parent/> </service>
-			<service name="CPU"> <parent/> </service>
-			<service name="PD">  <parent/> </service>
-			<service name="LOG"> <parent/> </service>
-			<service name="Platform"> <child name="platform"/> </service>
-		</route>
-		<config>
-			<select name="touchscreen-i2c-sck"  bank="H" index="0" function="2"/>
-			<select name="touchscreen-i2c-sda"  bank="H" index="1" function="2"/>
-			<out    name="touchscreen-int"      bank="H" index="4"/>
-			<in     name="touchscreen-int"      bank="H" index="4" irq="falling"/>
-			<out    name="touchscreen-reset"    bank="H" index="11"/>
-
-			<policy label="runtime -> touch -> PH11" pin="touchscreen-reset"/>
-			<policy label="runtime -> touch -> PH4"  pin="touchscreen-int"/>
-
-			<select name="lcd-pwm"   bank="L" index="10" function="2"/>
-			<out    name="backlight" bank="H" index="10" default="0"/>
-			<out    name="lcd-reset" bank="D" index="23" default="0"/>
-
-			<policy label="runtime -> fb -> PH10" pin="backlight"/>
-			<policy label="runtime -> fb -> PD23" pin="lcd-reset"/>
-
-			<!-- modem -->
-			<out name="4g-pwr-bat" bank="L" index="7" />
-			<out name="dtr"        bank="B" index="2" />
-			<out name="enable"     bank="H" index="8" />
-			<out name="host-ready" bank="H" index="7" />
-			<out name="pwrkey"     bank="B" index="3" />
-			<out name="reset"      bank="C" index="4" />
-
-			<in name="status"  bank="H" index="9" pull="up"/>
-			<in name="ri"      bank="L" index="6"/>
-
-			<policy label="modem -> battery"    pin="4g-pwr-bat"/>
-			<policy label="modem -> dtr"        pin="dtr"/>
-			<policy label="modem -> enable"     pin="enable"/>
-			<policy label="modem -> host-ready" pin="host-ready"/>
-			<policy label="modem -> pwrkey"     pin="pwrkey"/>
-			<policy label="modem -> reset"      pin="reset"/>
-			<policy label="modem -> ri"         pin="ri"/>
-			<policy label="modem -> status"     pin="status"/>
-
-			<!-- select uart3 -->
-			<select name="modem-uart_tx"  bank="D" index="0" function="3"/>
-			<select name="modem-uart_rx"  bank="D" index="1" function="3"/>
-
-			<!-- AIF2 pins -->
-			<select name="aif2-sync" bank="B" index="4" function="2"/>
-			<select name="aif2-blk"  bank="B" index="5" function="2"/>
-			<select name="aif2-dout" bank="B" index="6" function="2"/>
-			<select name="aif2-din"  bank="B" index="7" function="2"/>
-
-			<!-- speaker -->
-			<out name="speaker-amp" bank="C" index="7" default="on"/>
-
-			<!-- camera -->
-			<select name="csi-pclk"  bank="E" index="0" function="2"/>
-			<select name="csi-mclk"  bank="E" index="1" function="2"/>
-			<select name="csi-hsync" bank="E" index="2" function="2"/>
-			<select name="csi-vsync" bank="E" index="3" function="2"/>
-
-			<select name="csi-d0" bank="E" index="4"  function="2"/>
-			<select name="csi-d1" bank="E" index="5"  function="2"/>
-			<select name="csi-d2" bank="E" index="6"  function="2"/>
-			<select name="csi-d3" bank="E" index="7"  function="2"/>
-			<select name="csi-d4" bank="E" index="8"  function="2"/>
-			<select name="csi-d5" bank="E" index="9"  function="2"/>
-			<select name="csi-d6" bank="E" index="10" function="2"/>
-			<select name="csi-d7" bank="E" index="11" function="2"/>
-
-			<out    name="csi-sck" bank="E" index="12"/>
-			<in     name="csi-sck" bank="E" index="12"/>
-			<out    name="csi-sda" bank="E" index="13"/>
-			<in     name="csi-sda" bank="E" index="13"/>
-
-			<out    name="gc2145-reset"     bank="E" index="16"/>
-			<out    name="gc2145-powerdown" bank="E" index="17"/>
-
-			<out    name="ov5460-powerdown" bank="C" index="0"/>
-			<out    name="ov5460-reset"     bank="D" index="3"/>
-			<in     name="ov5460-reset"     bank="D" index="3"/>
-
-			<policy label_suffix="-> camera -> PC0"  pin="ov5460-powerdown"/>
-			<policy label_suffix="-> camera -> PD3"  pin="ov5460-reset"/>
-
-			<policy label_suffix="-> camera -> PE12" pin="csi-sck"/>
-			<policy label_suffix="-> camera -> PE13" pin="csi-sda"/>
-
-			<policy label_suffix="-> camera -> PE16" pin="gc2145-reset"/>
-			<policy label_suffix="-> camera -> PE17" pin="gc2145-powerdown"/>
-
-			<!-- wifi -->
-			<select name="sdc1_clk" bank="G" index="0" function="2"/>
-			<select name="sdc1_cmd" bank="G" index="1" function="2"/>
-			<select name="sdc1_d0"  bank="G" index="2" function="2"/>
-			<select name="sdc1_d1"  bank="G" index="3" function="2"/>
-			<select name="sdc1_d2"  bank="G" index="4" function="2"/>
-			<select name="sdc1_d3"  bank="G" index="5" function="2"/>
-
-			<out name="wifi_pwrseq" bank="L" index="2"/>
-
-			<policy label="runtime -> wifi -> PL2" pin="wifi_pwrseq"/>
-
-		</config>
-	</start>
-
-	<start name="terminal_crosslink" caps="100">
-		<provides> <service name="Terminal"/> </provides>
-		<route> <any-service> <parent/> </any-service> </route>
-	</start>
-
-	<start name="modem" caps="120">
-		<binary name="pinephone_modem"/>
-		<route>
-			<service name="ROM" label="config"> <parent label="modem.config"/> </service>
-			<service name="Pin_control"> <child name="a64_pio"/>        </service>
-			<service name="Pin_state">   <child name="a64_pio"/>        </service>
-			<service name="Terminal">    <child name="terminal_crosslink"/> </service>
-			<service name="ROM">    <parent/> </service>
-			<service name="PD">     <parent/> </service>
-			<service name="CPU">    <parent/> </service>
-			<service name="LOG">    <parent/> </service>
-			<service name="Timer">  <parent/> </service>
-			<service name="Report"> <parent/> </service>
-		</route>
-	</start>
-
-	<start name="uart_modem" ram="2M">
-		<binary name="ns16550_uart"/>
-		<route>
-			<service name="Terminal"> <child name="terminal_crosslink"/> </service>
-			<service name="Platform"> <child name="platform"/> </service>
-			<any-service> <parent/> </any-service>
-		</route>
-	</start>
-
-	<start name="audio_control">
-		<binary name="pinephone_audio_control"/>
-		<route>
-			<service name="ROM" label="config"> <parent label="audio.config"/> </service>
-			<service name="Platform"> <child name="platform"/> </service>
-			<any-service> <parent/> </any-service>
-		</route>
-	</start>
-
-	<start name="power">
-		<binary name="pinephone_power"/>
-		<route>
-			<service name="Scp">      <child name="platform"/> </service>
-			<service name="Platform"> <child name="platform"/> </service>
-			<service name="Report"> <parent label="power"/> </service>
-			<service name="ROM" label="system"> <parent label="system"/> </service>
-			<any-service> <parent/> </any-service>
-		</route>
-		<config period_ms="10000" system_rom="system"/>
-	</start>
-
-	<start name="button">
-		<binary name="pinephone_button"/>
-		<route>
-			<service name="Platform"> <child name="platform"/> </service>
-			<any-service> <parent/> </any-service>
-		</route>
-		<config/>
-	</start>
-
-</config>
++ start button
+  + binary pinephone_button
+  + config
+  + route
+    + service Platform | + child platform
+    + any-service      | + parent
+-
