@@ -76,7 +76,7 @@ config
     + service Platform            | + child platform
 
 + start pin_pulse
-  + config | pulse_ms: 500 | pcm_period_ms: 10
+  + config | pulse_ms: 500 | pwm_period_ms: 50
   + route
     + service Timer       | + child timer
     + service Pin_control | + child a64_pio

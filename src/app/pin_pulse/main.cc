@@ -1,5 +1,5 @@
 /*
- * \brief  Driving a pin crude pulse-code modulation
+ * \brief  Driving a pin crude pulse-width modulation
  * \author Norman Feske
  * \date   2021-04-22
  */
@@ -36,7 +36,7 @@ struct Pin_pulse::Main
 	 * Configuration
 	 */
 
-	unsigned _pcm_period_ms = 0;
+	unsigned _pwm_period_ms = 0;
 	unsigned _pulse_ms  = 0;
 
 	Attached_rom_dataspace _config { _env, "config" };
@@ -48,10 +48,10 @@ struct Pin_pulse::Main
 	{
 		_config.update();
 
-		_pcm_period_ms = _config.node().attribute_value("pcm_period_ms", 15U);
+		_pwm_period_ms = _config.node().attribute_value("pwm_period_ms", 15U);
 		_pulse_ms      = _config.node().attribute_value("pulse_ms",     500U);
 
-		if (_pcm_period_ms == 0 || _pulse_ms == 0)
+		if (_pwm_period_ms == 0 || _pulse_ms == 0)
 			warning("invalid configuration");
 
 		_handle_timer();
@@ -69,7 +69,7 @@ struct Pin_pulse::Main
 	/* ratio between low and high signal level, value between 0 and 1.0 */
 	double _low_high_ratio = 0;
 
-	unsigned _periods_per_pulse() const { return _pulse_ms / _pcm_period_ms; }
+	unsigned _periods_per_pulse() const { return _pulse_ms / _pwm_period_ms; }
 
 	/* gradual change of '_low_high_ratio' per period */
 	double _ratio_step() const { return 1.0 / _periods_per_pulse(); }
@@ -87,7 +87,7 @@ struct Pin_pulse::Main
 
 void Pin_pulse::Main::_handle_timer()
 {
-	if (_pcm_period_ms == 0 || _pulse_ms == 0)
+	if (_pwm_period_ms == 0 || _pulse_ms == 0)
 		return;
 
 	/* rising edge */
@@ -109,14 +109,14 @@ void Pin_pulse::Main::_handle_timer()
 		}
 
 		/* schedule falling edge */
-		_timer.trigger_once(uint64_t(1000.0*_pcm_period_ms*_low_high_ratio));
+		_timer.trigger_once(uint64_t(1000.0*_pwm_period_ms*_low_high_ratio));
 	}
 
 	/* falling edge */
 	else {
 
 		/* schedule falling edge */
-		_timer.trigger_once(uint64_t(1000.0*_pcm_period_ms*(1.0 - _low_high_ratio)));
+		_timer.trigger_once(uint64_t(1000.0*_pwm_period_ms*(1.0 - _low_high_ratio)));
 	}
 
 	_curr_signal = !_curr_signal;
