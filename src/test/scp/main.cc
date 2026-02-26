@@ -29,9 +29,9 @@ struct Test::Main
 	{
 		auto with_raw_attr_value = [&] (auto const &attr_name, auto const &fn)
 		{
-			_config.xml().for_each_attribute([&] (Xml_attribute const &attr) {
-				if (attr.name() == attr_name)
-					attr.with_raw_value(fn); });
+			_config.node().for_each_attribute([&] (Node::Attribute const &attr) {
+				if (attr.name == attr_name)
+					fn(attr.value.start, attr.value.num_bytes); });
 		};
 
 		with_raw_attr_value("program",
