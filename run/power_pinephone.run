@@ -1,5 +1,5 @@
 build {
-	core init timer
+	core init timer lib/ld
 	server/report_rom server/event_dump
 	driver/platform/a64 driver/power/pinephone
 }
