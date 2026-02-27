@@ -19,8 +19,16 @@ build {
 }
 
 proc quoted_wifi_config { args } {
-	set lines [split [wifi_config {*}$args] "\n"]
-	foreach line $lines { append result "\n  |     : $line" }
+	set xml [wifi_config {*}$args]
+	set hid [exec [genode_dir]/tool/hid --import-xml format - << $xml]
+	set result ""
+	foreach line [split $hid "\n"] {
+		if {$line == "wifi_config"} {
+			append result "+ wifi_config"
+		} elseif {$line != "-"} {
+			append result "\n  |       $line"
+		}
+	}
 	return $result
 }
 
@@ -45,8 +53,8 @@ config | prio_levels: 2
   + provides
     + service Platform
     + service Scp
-  + config | devices_rom: config
   + route | + any-service | + parent
+  + config | devices_rom: config
     + device pio | type: allwinner,sun50i-a64-pinctrl
       + io_mem | address: 0x1c20800 | size: 0x400 | . Ports A-H
       + io_mem | address: 0x1f02c00 | size: 0x400 | . Port L
@@ -181,19 +189,19 @@ config | prio_levels: 2
   + config | verbose: yes
   | + rom wifi_config
   |   + inline | description: disconnect
-  |     :} [quoted_wifi_config 5 10 no {}] {
+  |     } [quoted_wifi_config 5 10 no {}] {
   |
   |   + sleep  | milliseconds: 15000
   |   + inline | description: connect
-  |     :} [quoted_wifi_config 5 10 no [list "[wifi_ssid] [wifi_wpa] [wifi_psk] no"]] {
+  |     } [quoted_wifi_config 5 10 no [list "[wifi_ssid] [wifi_wpa] [wifi_psk] no"]] {
   |
   |   + sleep  | milliseconds: 60000
   |   + inline | description: rfkill block
-  |     :} [quoted_wifi_config 5 10 yes [list "[wifi_ssid] [wifi_wpa] [wifi_psk] no"]] {
+  |     } [quoted_wifi_config 5 10 yes [list "[wifi_ssid] [wifi_wpa] [wifi_psk] no"]] {
   |
   |   + sleep  | milliseconds: 30000
   |   + inline | description: rfkill unblock
-  |     :} [quoted_wifi_config 5 10 no [list "[wifi_ssid] [wifi_wpa] [wifi_psk] no"]] {
+  |     } [quoted_wifi_config 5 10 no [list "[wifi_ssid] [wifi_wpa] [wifi_psk] no"]] {
   |
   |   + sleep  | milliseconds: 30000
   + route
