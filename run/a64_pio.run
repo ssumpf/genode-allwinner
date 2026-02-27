@@ -43,22 +43,22 @@ config
       | + config
       |   + out led    | bank: B | index: 2
       |   + in  button | bank: H | index: 8 | pull: up | irq: edges
-      |   + policy | label_prefix: pin_event -> | pin: button
-      |   + policy | label_prefix: pin_pulse -> | pin: led
+      |   + policy | label: pin_event -> | pin: button
+      |   + policy | label: pin_pulse -> | pin: led
       |
       + sleep  | milliseconds: 5000
       + inline | description: LED off
       | + config
       |   + out led    | bank: B | index: 2 | default: off
       |   + in  button | bank: H | index: 8 | pull: up | irq: edges
-      |   + policy | label_prefix: pin_event -> | pin: button
+      |   + policy | label: pin_event -> | pin: button
       |
       + sleep  | milliseconds: 1000
       + inline | description: LED on
       | + config
       |   + out led    | bank: B | index: 2 | default: on
       |   + in  button | bank: H | index: 8 | pull: up | irq: edges
-      |   + policy | label_prefix: pin_event -> | pin: button
+      |   + policy | label: pin_event -> | pin: button
       |
       + sleep  | milliseconds: 1000
 

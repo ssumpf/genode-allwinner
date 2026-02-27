@@ -43,7 +43,7 @@ config
     + device rintc
       + io_mem | address: 0x1f00c00 | size: 0x400
       + irq | number: 64
-    + policy | label_prefix: pinephone_power ->
+    + policy | label: pinephone_power ->
       + device rintc
 
 + start pinephone_power

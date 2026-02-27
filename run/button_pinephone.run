@@ -28,7 +28,7 @@ config
     + device keyadc
       + io_mem | address: 0x1c21800 | size: 0x400
       + irq | number: 62
-    + policy | label_prefix: pinephone_button ->
+    + policy | label: pinephone_button ->
       + device keyadc
 
 + start pinephone_button

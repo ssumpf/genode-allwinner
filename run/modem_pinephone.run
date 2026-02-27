@@ -205,17 +205,17 @@ config | verbose: yes
     + service Scp
   + route | + any-service | + parent
   + config
-    + policy | label_prefix: uart_log ->
+    + policy | label: uart_log ->
       + device uart0
-    + policy | label_prefix: uart_phone ->
+    + policy | label: uart_phone ->
       + device uart3
-    + policy | label_prefix: a64_pio ->
+    + policy | label: a64_pio ->
       + device pio
-    + policy | label_prefix: audio_control ->
+    + policy | label: audio_control ->
       + device audio_codec
       + device audio_analog
       + device audio_codec_modem
-    + policy | label_prefix: usb_host -> | info: yes
+    + policy | label: usb_host -> | info: yes
       + device ehci1
       + device usb_phy
 

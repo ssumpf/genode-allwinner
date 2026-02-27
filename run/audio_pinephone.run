@@ -50,13 +50,13 @@ config | verbose: yes | prio_levels: 2
     + service Scp
   + route | + any-service | + parent
   + config | devices: yes
-    + policy | label_prefix: a64_pio ->
+    + policy | label: a64_pio ->
       + device pio
-    + policy | label_prefix: audio_control ->
+    + policy | label: audio_control ->
       + device audio_codec
       + device audio_analog
       + device audio_codec_soc
-    + policy | label_prefix: audio -> | info: yes
+    + policy | label: audio -> | info: yes
       + device audio_interface
       + device dma_controller
 

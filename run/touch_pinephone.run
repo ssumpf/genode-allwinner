@@ -57,9 +57,9 @@ config
       + clock bus-twi0 | driver_name:
       + reset-domain twi0
       + power-domain pmic-gpio0
-    + policy | label_prefix: a64_pio ->
+    + policy | label: a64_pio ->
       + device pio
-    + policy | label_prefix: goodix_touch -> | info: yes
+    + policy | label: goodix_touch -> | info: yes
       + device i2c0
 
 + start a64_pio

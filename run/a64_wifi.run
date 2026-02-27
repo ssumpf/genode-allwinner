@@ -71,9 +71,9 @@ config | prio_levels: 2
       + power-domain pmic-wifi
     + device wifi_pwrseq | type: mmc-pwrseq-simple
       + clock dummy | driver_name: ext_clock
-    + policy | label_prefix: a64_pio ->
+    + policy | label: a64_pio ->
       + device pio
-    + policy | label_prefix: wifi -> | info: yes
+    + policy | label: wifi -> | info: yes
       + device wifi_pwrseq
       + device mmc1
 
@@ -96,7 +96,7 @@ config | prio_levels: 2
     + select sdc1_d2  | bank: G | index: 4 | function: 2
     + select sdc1_d3  | bank: G | index: 5 | function: 2
     + out wifi_pwrseq | bank: L | index: 2
-    + policy | label_prefix: a64_wifi -> PL2 | pin: wifi_pwrseq
+    + policy | label: a64_wifi -> PL2 | pin: wifi_pwrseq
 
 + start test-lwip_httpsrv | ram: 128M
   + config

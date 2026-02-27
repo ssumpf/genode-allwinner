@@ -96,10 +96,10 @@ config
   |   + clock bus-tcon1 | driver_name: ahb
   |   + clock tcon1     | driver_name: tcon-ch1
   |
-  | + policy | label_prefix: a64_pio ->
+  | + policy | label: a64_pio ->
   |   + device pio
   |
-  | + policy | label_prefix: fb -> | info: yes
+  | + policy | label: fb -> | info: yes
   |   + device dphy
   |   + device dsi
   |   + device syscon
@@ -125,8 +125,8 @@ config
     + select lcd-pwm   | bank: L | index: 10 | function: 2
     + out    backlight | bank: H | index: 10 | default:  0
     + out    lcd-reset | bank: D | index: 23 | default:  0
-    + policy | label_prefix: fb -> PH10 | pin: backlight
-    + policy | label_prefix: fb -> PD23 | pin: lcd-reset
+    + policy | label: fb -> PH10 | pin: backlight
+    + policy | label: fb -> PD23 | pin: lcd-reset
 
 + start dynamic_rom | ram: 4M
   + provides | + service ROM

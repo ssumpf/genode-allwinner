@@ -42,7 +42,7 @@ config
       + clock bus-mmc2 | driver_name: ahb
       + clock mmc2     | driver_name: mmc
       + reset-domain mmc2
-    + policy | label_prefix: a64_sd_card -> | info: yes
+    + policy | label: a64_sd_card -> | info: yes
       + device sd_card
       + device emmc
 

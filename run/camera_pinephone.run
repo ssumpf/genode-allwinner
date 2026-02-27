@@ -99,10 +99,10 @@ config | verbose: yes
   |   + clock bus-tcon1 | driver_name: ahb
   |   + clock tcon1     | driver_name: tcon-ch1
   |
-  | + policy | label_prefix: a64_pio ->
+  | + policy | label: a64_pio ->
   |   + device pio
   |
-  | + policy | label_prefix: fb ->  | info: yes
+  | + policy | label: fb ->  | info: yes
   |   + device dphy
   |   + device dsi
   |   + device syscon
@@ -122,7 +122,7 @@ config | verbose: yes
   |   + clock dram-csi | driver_name: ram
   |   + clock csi-mclk | driver_name: xclk
   |
-  | + policy | label_prefix: camera ->  | info: yes
+  | + policy | label: camera ->  | info: yes
   |   + device csi
   + route
     + any-service

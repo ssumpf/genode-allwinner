@@ -56,7 +56,7 @@ config | verbose: yes
       + clock        ohci1
       + reset-domain ehci1
       + reset-domain ohci1
-    + policy | label_prefix: usb_host -> | info: yes
+    + policy | label: usb_host -> | info: yes
       + device ehci1
       + device usb_phy
 
