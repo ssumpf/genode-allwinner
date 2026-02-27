@@ -2,11 +2,11 @@ config | arch: | info: command-line interface to the system
 
 + common_routes
   + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init | + parent
-  + service CPU | + parent
-  + service PD | + parent
-  + service LOG | + parent
-  + service Timer | + parent
+  + service ROM | label_last: init      | + parent
+  + service CPU                         | + parent
+  + service PD                          | + parent
+  + service LOG                         | + parent
+  + service Timer                       | + parent
 
 + start fonts_fs | pkg: fonts_fs
   + route
