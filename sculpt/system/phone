@@ -1,8 +1,5 @@
-system | state:         
-       | usb:           no
-       | storage:       no
-       | power_profile: performance
-       | brightness:    50
+system | managed: yes | usb: no | storage: no | state:
+       | power_profile: performance | brightness: 50
 .
 . The start of the USB and storage drivers is triggered by
 . the phone_manager once the GUI is ready.
