@@ -8,6 +8,8 @@ config | arch:
   + service LOG                         | + parent
   + service Timer                       | + parent
 
++ option managed
+
 + start gpu | caps: 1500 | pkg: a64_lima_gpu-pinephone
   + route
     + service Platform | + parent | label: gpu

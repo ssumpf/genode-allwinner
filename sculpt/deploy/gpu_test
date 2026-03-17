@@ -8,6 +8,8 @@ config | arch: | info: GLMark2 OpenGL demo using the GPU
   + service LOG                         | + parent
   + service Timer                       | + parent
 
++ option managed
+
 + start gpu | version: gpu_test | caps: 1075 | pkg: a64_lima_gpu-pinephone
   + affinity | xpos: 0 | width: 1
   + route

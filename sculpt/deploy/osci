@@ -8,6 +8,8 @@ config | arch: | info: oscilloscope for the microphone
   + service LOG                         | + parent
   + service Timer                       | + parent
 
++ option managed
+
 + start audio | pkg: a64_audio | priority: 0 | cpu: 20
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config | record_play: yes

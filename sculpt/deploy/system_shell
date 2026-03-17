@@ -8,6 +8,8 @@ config | arch: | info: command-line interface to the system
   + service LOG                         | + parent
   + service Timer                       | + parent
 
++ option managed
+
 + start fonts_fs | pkg: fonts_fs
   + route
     + service ROM | label: config | + parent | label: config -> managed/fonts

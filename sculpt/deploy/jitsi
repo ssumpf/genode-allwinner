@@ -9,6 +9,8 @@ config | arch: | info: Video chat via Jitsi
   + service LOG                         | + parent
   + service Timer                       | + parent
 
++ option managed
+
 + start log_terminal | ram: 16M | caps: 120 | pkg: terminal
   + config
   | + initial | width: 720 | initial_height: 960

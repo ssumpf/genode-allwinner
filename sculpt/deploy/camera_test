@@ -8,6 +8,8 @@ config | arch: | info: test-driving the front and rear cameras
   + service LOG                         | + parent
   + service Timer                       | + parent
 
++ option managed
+
 + start test-camera | pkg: test-camera-pinephone
   + affinity | xpos: 0 | width: 1
   + route
