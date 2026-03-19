@@ -3,6 +3,7 @@ TARGET   = $(DRIVER)_touch
 REQUIRES = arm_v8a
 LIBS     = base a64_lx_emul
 SRC_CC  += main.cc
+SRC_CC  += lx_emul/event.cc
 SRC_CC  += lx_emul/pin.cc
 SRC_CC  += lx_emul/random_dummy.cc
 SRC_C   += lx_user.c input.c

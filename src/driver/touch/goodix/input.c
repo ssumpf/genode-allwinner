@@ -12,6 +12,7 @@
  */
 
 #include <genode_c_api/event.h>
+#include <lx_emul/event.h>
 #include <linux/input.h>
 #include <linux/input/mt.h>
 #include <linux/slab.h>
@@ -152,9 +153,12 @@ static void event_generator(struct genode_event_generator_ctx *ctx,
 		MT_KEY_UPDATED_FLAG = 4,   /* finger is featured in current frame */
 	};
 
+	bool was_touched = false;
 	for (i = 0; i < dev->mt->num_slots; i++) {
 		dev->mt->slots[i].key &= ~MT_KEY_CHANGED_FLAG;
 		dev->mt->slots[i].key &= ~MT_KEY_UPDATED_FLAG;
+
+		was_touched |= dev->mt->slots[i].key & MT_KEY_PRESENT_FLAG;
 	}
 
 	/*
@@ -198,6 +202,7 @@ static void event_generator(struct genode_event_generator_ctx *ctx,
 	/*
 	 * Detect press, release, motion
 	 */
+	bool is_touched = false;
 	for (i = 0; i < dev->mt->num_slots; i++) {
 
 		struct input_mt_slot *slot = &dev->mt->slots[i];
@@ -227,6 +232,16 @@ static void event_generator(struct genode_event_generator_ctx *ctx,
 			submit->touch_release(submit, i);
 			slot->key = 0;
 		}
+
+		is_touched |= slot->key & MT_KEY_PRESENT_FLAG;
+	}
+
+	/* report BTN_TOUCH if touch count changes from/to 0 */
+	if (was_touched != is_touched) {
+		if (is_touched)
+			submit->press(submit, lx_emul_event_keycode(BTN_TOUCH));
+		else
+			submit->release(submit, lx_emul_event_keycode(BTN_TOUCH));
 	}
 
 	/* capture a new batch of events */
