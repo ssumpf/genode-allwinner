@@ -1,28 +1,18 @@
-config | arch: | info: GLMark2 OpenGL demo using the GPU
-
-+ common_routes
-  + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init      | + parent
-  + service CPU                         | + parent
-  + service PD                          | + parent
-  + service LOG                         | + parent
-  + service Timer                       | + parent
+deploy | info: GLMark2 OpenGL demo using the GPU
 
 + option managed
 
-+ start gpu | version: gpu_test | caps: 1075 | pkg: a64_lima_gpu-pinephone
++ child gpu | version: gpu_test | caps: 1075 | pkg: a64_lima_gpu-pinephone
   + affinity | xpos: 0 | width: 1
-  + route
-    + service Platform | + parent | label: gpu
+  + connect | + platform | + parent | label: gpu
 
-+ start mesa_gpu-lima | pkg: mesa_gpu-lima
-  + route
-    + service RM | + parent
++ child mesa_gpu-lima | pkg: mesa_gpu-lima
+  + connect | + rm | + parent
 
-+ start glmark2 | pkg: glmark2
++ child glmark2 | pkg: glmark2
   + affinity | xpos: 1 | width: 1
-  + route
-    + service Gui                          | + parent
-    + service Gpu                          | + child gpu
-    + service ROM | label: mesa_gpu.lib.so | + child mesa_gpu-lima
+  + connect
+    + gui                 | + parent
+    + gpu                 | + child gpu
+    + rom mesa_gpu.lib.so | + child mesa_gpu-lima
 -

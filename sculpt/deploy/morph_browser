@@ -1,17 +1,8 @@
-config | arch: | info: Chromium-based Morph web browser
-
-+ common_routes
-  + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init      | + parent
-  + service CPU                         | + parent
-  + service PD                          | + parent
-  + service RM                          | + parent
-  + service LOG                         | + parent
-  + service Timer                       | + parent
+deploy | info: Chromium-based Morph web browser
 
 + option managed
 
-+ start log_terminal | ram: 16M | caps: 120 | pkg: terminal
++ child log_terminal | ram: 16M | caps: 120 | pkg: terminal
   + config
   | + initial | width: 720 | initial_height: 960
   | + palette
@@ -21,42 +12,39 @@ config | arch: | info: Chromium-based Morph web browser
   |   + rom VeraMono.ttf
   |   + dir fonts
   |     + dir monospace | + ttf regular | path: /VeraMono.ttf | size_px: 10
-  + route
-    + service ROM | label_last: VeraMono.ttf | + parent
-    + service Gui                            | + parent
+  + connect
+    + rom VeraMono.ttf | + parent
+    + gui              | + parent
 
-+ start log | pkg: stdin2out
++ child log | pkg: stdin2out
   + config
   | + libc | stdin: /report/log | stdout: /dev/terminal
   | + vfs
   |   + dir dev    | + terminal
   |   + dir report | + fs | label: report -> /
-  + route
-    + service File_system | + parent | identity: report
-    + service Terminal    | + child log_terminal
+  + connect
+    + fs       | + parent | identity: report
+    + terminal | + child log_terminal
 
-+ start fonts_fs | pkg: fonts_fs
-  + route
-    + service ROM | label: config | + parent | label: config -> managed/fonts
++ child fonts_fs | pkg: fonts_fs
+  + connect | + rom config | + parent | label: config -> managed/fonts
 
-+ start sntp_dummy_rtc | pkg: ssumpf/pkg/sntp_dummy_rtc/2025-10-27
-  + route
-    + service Nic | + child nic_router
++ child sntp_dummy_rtc | pkg: ssumpf/pkg/sntp_dummy_rtc/2025-10-27
+  + connect | + nic | + child nic_router
 
-+ start gpu | version: morph | caps: 2000 | pkg: a64_lima_gpu-pinephone
++ child gpu | version: morph | caps: 2000 | pkg: a64_lima_gpu-pinephone
   + affinity | xpos: 0 | width: 1
-  + route
-    + service Platform | + parent | label: gpu
+  + connect | + platform | + parent | label: gpu
 
-+ start audio | pkg: a64_audio | priority: 0 | cpu: 20
++ child audio | pkg: a64_audio | priority: 0
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config | record_play: yes
-  + route
-    + service Play     | + child mixer
-    + service Record   | + child mixer
-    + service Platform | + parent | label: audio
+  + connect
+    + play     | + child mixer
+    + record   | + child mixer
+    + platform | + parent | label: audio
 
-+ start mixer | pkg: record_play_mixer | priority: 0 | cpu: 20
++ child mixer | pkg: record_play_mixer | priority: 0
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config | jitter_ms: 23 | warning_rate_ms: 0
   |
@@ -78,27 +66,25 @@ config | arch: | info: Chromium-based Morph web browser
   | + policy | label: audio -> right
   |          | record: right | period_ms: 12 | jitter_ms: 5 | volume: 1.0
   |
-  + route | + service Report | + parent
+  + connect | + report | + parent
 
-+ start black_hole | pkg: black_hole
++ child black_hole | pkg: black_hole
   + config
     + record
     + capture
     + report
 
-+ start touch_keyboard | pkg: touch_keyboard
-  + route
-    + service Gui                                  | + parent | label: touch_keyboard
-    + service Event                                | + parent | label: global
-    + service File_system | label_prefix: fonts -> | + child fonts_fs
++ child touch_keyboard | pkg: touch_keyboard
+  + connect
+    + gui      | + parent | label: touch_keyboard
+    + event    | + parent | label: global
+    + fs fonts | + child fonts_fs
 
-+ start mesa_gpu-lima | pkg: mesa_gpu-lima
-  + route
-    + service RM
-      + parent
++ child mesa_gpu-lima | pkg: mesa_gpu-lima
+  + connect | + rm | + parent
 
-+ start morph_config_fs | pkg: vfs
-  + provides | + service File_system
++ child morph_config_fs | pkg: vfs
+  + provides | + fs
   + config
     + default-policy | writeable: yes | root: /
     + vfs
@@ -124,21 +110,21 @@ config | arch: | info: Chromium-based Morph web browser
       |   :
       + ram
 
-+ start morph_browser | ram: 1350M | pkg: cproc/pkg/morph_browser_pinephone-jemalloc/2025-10-27
++ child morph_browser | ram: 1350M | pkg: cproc/pkg/morph_browser_pinephone-jemalloc/2025-10-27
   + affinity | xpos: 1 | width: 2
-  + route
-    + service Nic                                      | + child nic_router
-    + service File_system | label_prefix: config ->    | + child morph_config_fs
-    + service File_system | label_prefix: downloads -> | + child ram_fs
-    + service Gui | label_last: QGenodeScreen          | + parent
-    + service Gui                                      | + parent | label: focus
-    + service Report | label_last: shape               | + parent | label: shape
-    + service Report | label: clipboard                | + parent
-    + service ROM | label: clipboard                   | + parent
-    + service Rtc                                      | + child sntp_dummy_rtc
-    + service Play                                     | + child mixer
-    + service Record                                   | + child black_hole
-    + service Capture                                  | + child black_hole
-    + service Gpu                                      | + child gpu
-    + service ROM | label: mesa_gpu.lib.so             | + child mesa_gpu-lima
+  + connect
+    + nic                 | + child nic_connece
+    + fs config           | + child morph_config_fs
+    + fs downloads        | + child ram_fs
+    + gui QGenodeScreen   | + parent
+    + gui                 | + parent | label: focus
+    + report shape        | + parent | label: shape
+    + report clipboard    | + parent
+    + rom    clipboard    | + parent
+    + rtc                 | + child sntp_dummy_rtc
+    + play                | + child mixer
+    + record              | + child black_hole
+    + capture             | + child black_hole
+    + gpu                 | + child gpu
+    + rom mesa_gpu.lib.so | + child mesa_gpu-lima
 -

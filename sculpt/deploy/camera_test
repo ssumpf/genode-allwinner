@@ -1,28 +1,20 @@
-config | arch: | info: test-driving the front and rear cameras
-
-+ common_routes
-  + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init      | + parent
-  + service CPU                         | + parent
-  + service PD                          | + parent
-  + service LOG                         | + parent
-  + service Timer                       | + parent
+deploy | info: test-driving the front and rear cameras
 
 + option managed
 
-+ start test-camera | pkg: test-camera-pinephone
++ child test-camera | pkg: test-camera-pinephone
   + affinity | xpos: 0 | width: 1
-  + route
-    + service Gui                       | + parent | label: camera
-    + service Timer                     | + parent
-    + service Platform                  | + parent | label: camera
-    + service Pin_state   | label: PD3  | + parent | label: camera -> PD3
-    + service Pin_state   | label: PE12 | + parent | label: camera -> PE12
-    + service Pin_state   | label: PE13 | + parent | label: camera -> PE13
-    + service Pin_control | label: PC0  | + parent | label: camera -> PC0
-    + service Pin_control | label: PD3  | + parent | label: camera -> PD3
-    + service Pin_control | label: PE12 | + parent | label: camera -> PE12
-    + service Pin_control | label: PE13 | + parent | label: camera -> PE13
-    + service Pin_control | label: PE16 | + parent | label: camera -> PE16
-    + service Pin_control | label: PE17 | + parent | label: camera -> PE17
+  + connect
+    + gui              | + parent | label: camera
+    + timer            | + parent
+    + platform         | + parent | label: camera
+    + pin_state   PD3  | + parent | label: camera -> PD3
+    + pin_state   PE12 | + parent | label: camera -> PE12
+    + pin_state   PE13 | + parent | label: camera -> PE13
+    + pin_control PC0  | + parent | label: camera -> PC0
+    + pin_control PD3  | + parent | label: camera -> PD3
+    + pin_control PE12 | + parent | label: camera -> PE12
+    + pin_control PE13 | + parent | label: camera -> PE13
+    + pin_control PE16 | + parent | label: camera -> PE16
+    + pin_control PE17 | + parent | label: camera -> PE17
 -

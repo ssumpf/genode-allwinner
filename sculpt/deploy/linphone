@@ -1,41 +1,29 @@
-config | arch: | info: Linphone SIP Client
-
-+ common_routes
-  + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init      | + parent
-  + service CPU                         | + parent
-  + service PD                          | + parent
-  + service LOG                         | + parent
-  + service Timer                       | + parent
+deploy | info: Linphone SIP Client
 
 + option managed
 
-+ start linphone_loading_backdrop | pkg: ssumpf/pkg/linphone_loading_backdrop/2025-10-20
-  + route
-    + service Gui | + parent | label: backdrop
++ child linphone_loading_backdrop | pkg: ssumpf/pkg/linphone_loading_backdrop/2025-10-20
+  + connect | + gui | + parent | label: backdrop
 
-+ start fonts_fs | pkg: fonts_fs
-  + route
-    + service ROM | label: config | + parent | label: config -> managed/fonts
++ child fonts_fs | pkg: fonts_fs
+  + connect | + rom config | + parent | label: config -> managed/fonts
 
-+ start sntp_dummy_rtc | pkg: ssumpf/pkg/sntp_dummy_rtc/2025-10-27
-  + route
-    + service Nic | + child nic_router
++ child sntp_dummy_rtc | pkg: ssumpf/pkg/sntp_dummy_rtc/2025-10-27
+  + connect | + nic | + child nic_router
 
-+ start gpu | caps: 2000 | pkg: a64_lima_gpu-pinephone | priority: -1
++ child gpu | caps: 2000 | pkg: a64_lima_gpu-pinephone | priority: -1
   + affinity | xpos: 0 | width: 1
-  + route
-    + service Platform | + parent | label: gpu
+  + connect | + platform | + parent | label: gpu
 
-+ start audio | pkg: a64_audio | priority: 0
++ child audio | pkg: a64_audio | priority: 0
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config | record_play: yes
-  + route
-    + service Play     | + child mixer
-    + service Record   | + child mixer
-    + service Platform | + parent | label: audio
+  + connect
+    + play     | + child mixer
+    + record   | + child mixer
+    + platform | + parent | label: audio
 
-+ start mixer | pkg: record_play_mixer | priority: 0
++ child mixer | pkg: record_play_mixer | priority: 0
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config | jitter_ms: 23
   |
@@ -52,54 +40,51 @@ config | arch: | info: Linphone SIP Client
   | + policy | label_suffix: linphonec -> right
   |          | period_ms: 46 | jitter_ms: 23 | record: mic_right | volume: 1.0
   |
-  + route | + service Report | + parent
+  + connect | + report | + parent
 
-+ start black_hole | pkg: black_hole
++ child black_hole | pkg: black_hole
   + config
     + audio_in
     + audio_out
     + capture
     + report
 
-+ start touch_keyboard | pkg: touch_keyboard
-  + route
-    + service Gui                                  | + parent | label: touch_keyboard
-    + service Event                                | + parent | label: global
-    + service File_system | label_prefix: fonts -> | + child fonts_fs
++ child touch_keyboard | pkg: touch_keyboard
+  + connect
+    + gui      | + parent | label: touch_keyboard
+    + event    | + parent | label: global
+    + fs fonts | + child fonts_fs
 
-+ start mesa_gpu-lima | pkg: mesa_gpu-lima
-  + route
-    + service RM | + parent
++ child mesa_gpu-lima | pkg: mesa_gpu-lima
+  + connect | + rm | + parent
 
-+ start terminal_crosslink | pkg: ssumpf/pkg/terminal_crosslink/2025-10-12 | priority: -2
-  + route
++ child terminal_crosslink | pkg: ssumpf/pkg/terminal_crosslink/2025-10-12 | priority: -2
 
-+ start linphone_gui | pkg: ssumpf/pkg/linphone-simple/2025-10-20 | priority: -2
++ child linphone_gui | pkg: ssumpf/pkg/linphone-simple/2025-10-20 | priority: -2
   + affinity | xpos: 1 | ypos: 0 | width: 1 | height: 1
-  + route
-    + service Gui | label_last: QGenodeScreen | + parent
-    + service Gui                             | + parent | label: focus
-    + service RM                              | + parent
-    + service Gpu                             | + child gpu
-    + service ROM | label: mesa_gpu.lib.so    | + child mesa_gpu-lima
-    + service Terminal                        | + child terminal_crosslink
-    + service File_system                     | + child linphone_recall_fs
-    + service Report | label: shape           | + child black_hole
+  + connect
+    + gui QGenodeScreen   | + parent
+    + gui                 | + parent | label: focus
+    + rm                  | + parent
+    + gpu                 | + child gpu
+    + rom mesa_gpu.lib.so | + child mesa_gpu-lima
+    + terminal            | + child terminal_crosslink
+    + fs                  | + child linphone_recall_fs
+    + report shape        | + child black_hole
 
-+ start linphone_recall_fs | pkg: chroot
-  + route
-    + service File_system | + child default_fs_rw
++ child linphone_recall_fs | pkg: chroot
+  + connect | + fs | + child default_fs_rw
   + config
     + default-policy | path: /recall/linphone | writeable: yes
 
-+ start linphone_daemon | pkg: ssumpf/pkg/linphonec_daemon/2025-10-20 | priority: -1
++ child linphone_daemon | pkg: ssumpf/pkg/linphonec_daemon/2025-10-20 | priority: -1
   + affinity | xpos: 1 | ypos: 0 | width: 1 | height: 1
-  + route
-    + service Nic         | + child nic_router
-    + service Record      | + child mixer
-    + service Play        | + child mixer
-    + service Terminal    | + child terminal_crosslink
-    + service Rtc         | + child sntp_dummy_rtc
-    + service File_system | + child linphone_recall_fs
-    + service RM          | + parent
+  + connect
+    + nic      | + child nic_router
+    + record   | + child mixer
+    + play     | + child mixer
+    + terminal | + child terminal_crosslink
+    + rtc      | + child sntp_dummy_rtc
+    + fs       | + child linphone_recall_fs
+    + rm       | + parent
 -

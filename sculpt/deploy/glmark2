@@ -1,22 +1,13 @@
-config | arch:
-
-+ common_routes
-  + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init      | + parent
-  + service CPU                         | + parent
-  + service PD                          | + parent
-  + service LOG                         | + parent
-  + service Timer                       | + parent
+deploy
 
 + option managed
 
-+ start gpu | caps: 1500 | pkg: a64_lima_gpu-pinephone
-  + route
-    + service Platform | + parent | label: gpu
++ child gpu | caps: 1500 | pkg: a64_lima_gpu-pinephone
+  + connect | + platform | + parent | label: gpu
 
-+ start glmark2 | pkg: glmark2
-  + route
-    + service Gui                          | + parent | label: focus
-    + service Gpu                          | + child gpu
-    + service ROM | label: mesa_gpu.lib.so | + parent | label: mesa_gpu-lima.lib.so
++ child glmark2 | pkg: glmark2
+  + connect
+    + gui                 | + parent | label: focus
+    + gpu                 | + child gpu
+    + rom mesa_gpu.lib.so | + parent | label: mesa_gpu-lima.lib.so
 -

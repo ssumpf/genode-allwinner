@@ -1,35 +1,26 @@
-config | arch: | info: command-line interface to the system
-
-+ common_routes
-  + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init      | + parent
-  + service CPU                         | + parent
-  + service PD                          | + parent
-  + service LOG                         | + parent
-  + service Timer                       | + parent
+deploy | info: command-line interface to the system
 
 + option managed
 
-+ start fonts_fs | pkg: fonts_fs
-  + route
-    + service ROM | label: config | + parent | label: config -> managed/fonts
++ child fonts_fs | pkg: fonts_fs
+  + connect | + rom config | + parent | label: config -> managed/fonts
 
-+ start system_shell | pkg: system_shell
-  + route
-    + service Gui                                   | + parent | label: focus
-    + service File_system | label_prefix: fonts ->  | + child fonts_fs
-    + service File_system | label_prefix: target -> | + child default_fs_rw
-    + service File_system | label_prefix: config -> | + parent | identity: config
-    + service File_system | label_prefix: report -> | + parent | identity: report
-    + service Report | label: clipboard             | + parent | label: clipboard
-    + service ROM | label: clipboard                | + parent | label: clipboard
-    + service ROM | label: vimrc                    | + parent | label: config -> vimrc
-    + service ROM | label_last: cached_fs_rom       | + parent | label: cached_fs_rom
-    + service RM                                    | + parent
++ child system_shell | pkg: system_shell
+  + connect
+    + gui               | + parent | label: focus
+    + fs fonts          | + child fonts_fs
+    + fs target         | + child default_fs_rw
+    + fs config         | + parent | identity: config
+    + fs report         | + parent | identity: report
+    + report clipboard  | + parent | label: clipboard
+    + rom clipboard     | + parent | label: clipboard
+    + rom vimrc         | + parent | label: config -> vimrc
+    + rom cached_fs_rom | + parent | label: cached_fs_rom
+    + rm                | + parent
 
-+ start touch_keyboard | pkg: touch_keyboard
-  + route
-    + service Gui                                  | + parent | label: touch_keyboard
-    + service Event                                | + parent | label: global
-    + service File_system | label_prefix: fonts -> | + child fonts_fs
++ child touch_keyboard | pkg: touch_keyboard
+  + connect
+    + gui      | + parent | label: touch_keyboard
+    + event    | + parent | label: global
+    + fs fonts | + child fonts_fs
 -

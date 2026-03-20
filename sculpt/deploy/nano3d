@@ -1,16 +1,8 @@
-config | arch: | info: software-rendering example
-
-+ common_routes
-  + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init      | + parent
-  + service CPU                         | + parent
-  + service PD                          | + parent
-  + service LOG                         | + parent
-  + service Timer                       | + parent
+deploy | info: software-rendering example
 
 + option managed
 
-+ start backdrop | pkg: sticks_blue_backdrop
++ child backdrop | pkg: sticks_blue_backdrop
   + config
   | + libc
   | + vfs
@@ -19,13 +11,10 @@ config | arch: | info: software-rendering example
   | + fill | color: #122334
   | + image | png: grid.png | tiled: yes | alpha: 200
   | + image | png: genode_logo.png | anchor: bottom_right | alpha: 150
-  + route
-    + service Gui | + parent | label: backdrop
-    + any-service
-      + parent
-      + any-child
+  + connect
+    + gui | + parent | label: backdrop
 
-+ start dynamic_rom | ram: 4M | pkg: dynamic_rom
++ child dynamic_rom | ram: 4M | pkg: dynamic_rom
   + config | verbose: yes
     + rom nano3d.config
       + inline | description: initial state  | + config | painter: textures
@@ -37,12 +26,9 @@ config | arch: | info: software-rendering example
       + inline | description: texturing      | + config | painter: textured | shape: cube
       + sleep  | milliseconds: 1000
 
-+ start nano3d | pkg: nano3d | config: no
++ child nano3d | pkg: nano3d | config: no
   + affinity | xpos: 1 | width: 1
-  + route
-    + service Gui                 | + parent | label: follow_touch
-    + service ROM | label: config | + child dynamic_rom | label: nano3d.config
-    + any-service
-      + parent
-      + any-child
+  + connect
+    + gui        | + parent | label: follow_touch
+    + rom config | + child dynamic_rom | label: nano3d.config
 -

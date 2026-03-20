@@ -1,24 +1,16 @@
-config | arch: | info: oscilloscope for the microphone
-
-+ common_routes
-  + service ROM | label_last: ld.lib.so | + parent
-  + service ROM | label_last: init      | + parent
-  + service CPU                         | + parent
-  + service PD                          | + parent
-  + service LOG                         | + parent
-  + service Timer                       | + parent
+deploy | info: oscilloscope for the microphone
 
 + option managed
 
-+ start audio | pkg: a64_audio | priority: 0 | cpu: 20
++ child audio | pkg: a64_audio | priority: 0
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config | record_play: yes
-  + route
-    + service Play     | + child mixer
-    + service Record   | + child mixer
-    + service Platform | + parent | label: audio
+  + connect
+    + play     | + child mixer
+    + record   | + child mixer
+    + platform | + parent | label: audio
 
-+ start mixer | pkg: record_play_mixer | priority: 0 | cpu: 20
++ child mixer | pkg: record_play_mixer | priority: 0
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config | jitter_ms: 10 | warning_rate_ms: 0
   |
@@ -37,18 +29,18 @@ config | arch: | info: oscilloscope for the microphone
   | + policy | label: audio -> right
   |          | record: right | period_ms: 12 | jitter_ms: 5 | volume: 1.0
   |
-  + route | + service Report | + parent
+  + connect | + report | + parent
 
-+ start record_rom | pkg: record_rom | priority: 0
++ child record_rom | pkg: record_rom | priority: 0
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config | period_ms: 12 | sample_rate_hz: 44100
     + record | label: mic_left
     + record | label: mic_right
-  + route
-    + service Record | + child mixer
-    + service RM     | + parent
+  + connect
+    + record | + child mixer
+    + rm     | + parent
 
-+ start osci | pkg: rom_osci | priority: -1
++ child osci | pkg: rom_osci | priority: -1
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
   + config
   |        fps:        50
@@ -63,8 +55,8 @@ config | arch: | info: oscilloscope for the microphone
   |
   | + channel | label: mic_left  | color: #ff6633 | v_pos: 0.25
   | + channel | label: mic_right | color: #cc7777 | v_pos: 0.75
-  + route
-    + service ROM | label: recording | + child record_rom
-    + service Gui                    | + parent
-    + service RM                     | + parent
+  + connect
+    + rom recording | + child record_rom
+    + gui           | + parent
+    + rm            | + parent
 -
