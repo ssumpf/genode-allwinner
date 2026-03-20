@@ -1,0 +1,4 @@
+option
++ child system_clock | pkg: sntp_dummy_rtc
+  + connect | + nic | + child nic_router
+-

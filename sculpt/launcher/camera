@@ -1,8 +1,0 @@
-launcher | pkg: camera-pinephone
-+ affinity | xpos: 3 | width: 1
-+ route
-  + service Timer       | + parent
-  + service Platform    | + parent | label: camera
-  + service Pin_state   | + parent
-  + service Pin_control | + parent
--

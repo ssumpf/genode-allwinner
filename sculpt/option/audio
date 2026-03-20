@@ -1,0 +1,9 @@
+option
++ child audio | pkg: a64_audio | priority: 0
+  + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1
+  + config | record_play: yes
+  + connect
+    + play     | + child mixer
+    + record   | + child mixer
+    + platform | + parent | label: audio
+-

@@ -1,6 +1,0 @@
-launcher | pkg: glmark2
-+ route
-  + service Gui                          | + parent
-  + service Gpu                          | + child gpu
-  + service ROM | label: mesa_gpu.lib.so | + child mesa_gpu-lima
--

@@ -1,9 +1,0 @@
-launcher screenshot | pkg: ssumpf/pkg/screenshot_with_trigger/2025-10-10 | priority: -2
-+ route
-  + service Gui | label: trigger                  | + parent | label: overlay
-  + service Gui                                   | + parent
-  + service Capture                               | + parent | label: global
-  + service Event                                 | + parent | label: global
-  + service File_system | label_prefix: target -> | + child default_fs_rw
-  + service Rtc                                   | + child system_clock-dummy
--

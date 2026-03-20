@@ -1,0 +1,5 @@
+option
++ child gpu | pkg: a64_lima_gpu-pinephone
+  + affinity | xpos: 1 | width: 2
+  + connect | + platform | + parent | label: gpu
+-

@@ -1,0 +1,7 @@
+option
++ child touch_keyboard | pkg: touch_keyboard
+  + connect
+    + gui      | + child gui
+    + event    | + child event_filter | label: global
+    + fs fonts | + child fonts_fs
+-

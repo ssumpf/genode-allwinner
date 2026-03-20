@@ -1,0 +1,9 @@
+option
++ child camera | pkg: camera-pinephone
+  + affinity | xpos: 3 | width: 1
+  + connect
+    + timer       | + parent
+    + platform    | + parent | label: camera
+    + pin_state   | + parent
+    + pin_control | + parent
+-
