@@ -1,5 +1,6 @@
 deploy | info: oscilloscope for the microphone
 
++ option board
 + option sculpt
 + option managed
 

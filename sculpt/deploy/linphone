@@ -1,5 +1,6 @@
 deploy | info: Linphone SIP Client
 
++ option board
 + option sculpt
 + option managed
 

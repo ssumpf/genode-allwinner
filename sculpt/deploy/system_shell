@@ -1,5 +1,6 @@
 deploy | info: command-line interface to the system
 
++ option board
 + option sculpt
 + option managed
 
