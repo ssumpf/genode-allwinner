@@ -1,5 +1,6 @@
 deploy | info: oscilloscope for the microphone
 
++ option sculpt
 + option managed
 
 + child audio | pkg: a64_audio | priority: 0

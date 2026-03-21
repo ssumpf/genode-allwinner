@@ -1,5 +1,6 @@
 deploy
 
++ option sculpt
 + option managed
 
 + child gpu | pkg: a64_lima_gpu-pinephone

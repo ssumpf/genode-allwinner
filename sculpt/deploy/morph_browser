@@ -1,5 +1,6 @@
 deploy | info: Chromium-based Morph web browser
 
++ option sculpt
 + option managed
 
 + child log_terminal | ram: 16M | caps: 120 | pkg: terminal

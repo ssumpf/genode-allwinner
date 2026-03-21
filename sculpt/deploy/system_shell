@@ -1,5 +1,6 @@
 deploy | info: command-line interface to the system
 
++ option sculpt
 + option managed
 
 + child fonts_fs | pkg: fonts_fs

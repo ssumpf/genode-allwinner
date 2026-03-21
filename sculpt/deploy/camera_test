@@ -1,5 +1,6 @@
 deploy | info: test-driving the front and rear cameras
 
++ option sculpt
 + option managed
 
 + child test-camera | pkg: test-camera-pinephone

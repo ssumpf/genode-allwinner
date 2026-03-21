@@ -1,5 +1,6 @@
 deploy | info: Goa testbed
 
++ option sculpt
 + option managed
 
 + child fonts_fs | priority: -2 | pkg: fonts_fs

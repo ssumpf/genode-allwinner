@@ -1,5 +1,6 @@
 deploy | info: GLMark2 OpenGL demo using the GPU
 
++ option sculpt
 + option managed
 
 + child gpu | version: gpu_test | caps: 1075 | pkg: a64_lima_gpu-pinephone
