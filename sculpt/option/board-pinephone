@@ -1,0 +1,33 @@
+option
+
++ child platform | binary: init | caps: 1500 | ram: 32M | managing_system: yes
+  + provides
+    + platform
+    + pin_state
+    + pin_control
+    + irq
+  + connect
+    + rom config                  | + parent | label: config -> platform
+    + rom system                  | + parent | label: config -> system
+    + rom sleep_states            | + child report | label: acpi_support/sleep_states
+    + report modem -> state       | + child report | label: modem -> state
+    + report                      | + child report
+    + rm                          | + parent
+    + io_mem                      | + parent
+    + io_port                     | + parent
+    + irq                         | + parent
+    + event                       | + child event_filter
+    + rom audio.config            | + parent | label: config -> audio
+    + rom modem.config            | + parent | label: config -> modem
+    + rom ld.lib.so               | + parent
+    + rom a64_platform            | + parent
+    + rom a64_pio                 | + parent
+    + rom terminal_crosslink      | + parent
+    + rom pinephone_modem         | + parent
+    + rom ns16550_uart            | + parent
+    + rom pinephone_audio_control | + parent
+    + rom pinephone_power         | + parent
+    + rom pinephone_button        | + parent
+    + rom platform_info           | + parent
+    + rom devices                 | + parent
+-

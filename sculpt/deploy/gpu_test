@@ -6,7 +6,7 @@ deploy | info: GLMark2 OpenGL demo using the GPU
 
 + child gpu | version: gpu_test | caps: 1075 | pkg: a64_lima_gpu-pinephone
   + affinity | xpos: 0 | width: 1
-  + connect | + platform | + parent | label: gpu
+  + connect | + platform | + child platform | label: gpu
 
 + child mesa_gpu-lima | pkg: mesa_gpu-lima
   + connect | + rm | + parent

@@ -1,5 +1,5 @@
-drivers:      pinephone
 usb:          pinephone
+platform:     pinephone
 leitzentrale: phone
 nitpicker:    phone
 fonts:        phone-720px

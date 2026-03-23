@@ -10,7 +10,7 @@ deploy | info: oscilloscope for the microphone
   + connect
     + play     | + child mixer
     + record   | + child mixer
-    + platform | + parent | label: audio
+    + platform | + child platform | label: audio
 
 + child mixer | pkg: record_play_mixer | priority: 0
   + affinity | xpos: 0 | ypos: 0 | width: 1 | height: 1

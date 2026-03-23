@@ -23,7 +23,7 @@ deploy | info: Goa testbed
     + trace                          | + parent
     + vm                             | + parent
     + gpu                            | + parent
-    + gui                            | + parent
+    + gui                            | + child gui
     + rtc                            | + child sntp_dummy_rtc
     + play                           | + child black_hole
     + record                         | + child black_hole

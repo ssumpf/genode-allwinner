@@ -27,7 +27,7 @@ config
   + config
     + policy | label: a64_pio ->
       + device pio
-    + policy | label: runtime -> fb -> | info: yes
+    + policy | label: fb | info: yes
       + device dphy
       + device dsi
       + device syscon
@@ -35,7 +35,7 @@ config
       + device r_pwm
       + device tcon0
       + device tcon1
-    + policy | label: runtime -> touch -> | info: yes
+    + policy | label: touch | info: yes
       + device i2c0
     + policy | label: uart_modem ->
       + device uart3
@@ -46,20 +46,20 @@ config
       + device audio_analog
       + device audio_codec_modem
       + device audio_codec_soc
-    + policy | label: runtime -> usb -> | info: yes
+    + policy | label: usb | info: yes
       + device ehci1
       + device usb_phy
-    + policy | label: runtime -> mmc -> | info: yes
+    + policy | label: mmc | info: yes
       + device sd_card
       + device emmc
-    + policy | label: runtime -> gpu | info: yes
+    + policy | label: gpu | info: yes
       + device gpu
-    + policy | label: runtime -> camera | info: yes
+    + policy | label: camera | info: yes
       + device csi
-    + policy | label: runtime -> audio | info: yes
+    + policy | label: audio | info: yes
       + device audio_interface
       + device dma_controller
-    + policy | label: runtime -> wifi | info: yes
+    + policy | label: wifi | info: yes
       + device wifi_pwrseq
       + device mmc1
     + policy | label: power ->
@@ -82,21 +82,21 @@ config
     .
     . touchscreen
     .
-    + select touchscreen-i2c-sck | bank: H | index:  0 | function: 2
-    + select touchscreen-i2c-sda | bank: H | index:  1 | function: 2
-    + out    touchscreen-int     | bank: H | index:  4
-    + in     touchscreen-int     | bank: H | index:  4 | irq: falling
-    + out    touchscreen-reset   | bank: H | index: 11
-    + policy | label: runtime -> touch -> PH11 | pin: touchscreen-reset
-    + policy | label: runtime -> touch -> PH4  | pin: touchscreen-int
+    + select touch-i2c-sck | bank: H | index:  0 | function: 2
+    + select touch-i2c-sda | bank: H | index:  1 | function: 2
+    + out    touch-int     | bank: H | index:  4
+    + in     touch-int     | bank: H | index:  4 | irq: falling
+    + out    touch-reset   | bank: H | index: 11
+    + policy | label: touch-reset | pin: touch-reset
+    + policy | label: touch-int   | pin: touch-int
     .
     . display
     .
     + select lcd-pwm   | bank: L | index: 10 | function: 2
     + out    backlight | bank: H | index: 10 | default: 0
     + out    lcd-reset | bank: D | index: 23 | default: 0
-    + policy | label: runtime -> fb -> PH10 | pin: backlight
-    + policy | label: runtime -> fb -> PD23 | pin: lcd-reset
+    + policy | label: backlight | pin: backlight
+    + policy | label: lcd-reset | pin: lcd-reset
     .
     . modem
     .
@@ -150,12 +150,12 @@ config
     + out    ov5460-powerdown | bank: C | index:  0
     + out    ov5460-reset     | bank: D | index:  3
     + in     ov5460-reset     | bank: D | index:  3
-    + policy | label_suffix: -> camera -> PC0  | pin: ov5460-powerdown
-    + policy | label_suffix: -> camera -> PD3  | pin: ov5460-reset
-    + policy | label_suffix: -> camera -> PE12 | pin: csi-sck
-    + policy | label_suffix: -> camera -> PE13 | pin: csi-sda
-    + policy | label_suffix: -> camera -> PE16 | pin: gc2145-reset
-    + policy | label_suffix: -> camera -> PE17 | pin: gc2145-powerdown
+    + policy | label: camera -> PC0  | pin: ov5460-powerdown
+    + policy | label: camera -> PD3  | pin: ov5460-reset
+    + policy | label: camera -> PE12 | pin: csi-sck
+    + policy | label: camera -> PE13 | pin: csi-sda
+    + policy | label: camera -> PE16 | pin: gc2145-reset
+    + policy | label: camera -> PE17 | pin: gc2145-powerdown
     .
     . wifi
     .
@@ -166,7 +166,7 @@ config
     + select sdc1_d2     | bank: G | index: 4 | function: 2
     + select sdc1_d3     | bank: G | index: 5 | function: 2
     + out    wifi_pwrseq | bank: L | index: 2
-    + policy | label: runtime -> wifi -> PL2 | pin: wifi_pwrseq
+    + policy | label: wifi -> PL2 | pin: wifi_pwrseq
 
 + start terminal_crosslink | caps: 100
   + provides | + service Terminal

@@ -1,0 +1,15 @@
+option
++ child camera_test | pkg: test-camera-pinephone
+  + connect
+    + gui              | + parent         | label: camera
+    + platform         | + child platform | label: camera
+    + pin_state   PD3  | + child platform | label: camera -> PD3
+    + pin_state   PE12 | + child platform | label: camera -> PE12
+    + pin_state   PE13 | + child platform | label: camera -> PE13
+    + pin_control PC0  | + child platform | label: camera -> PC0
+    + pin_control PD3  | + child platform | label: camera -> PD3
+    + pin_control PE12 | + child platform | label: camera -> PE12
+    + pin_control PE13 | + child platform | label: camera -> PE13
+    + pin_control PE16 | + child platform | label: camera -> PE16
+    + pin_control PE17 | + child platform | label: camera -> PE17
+-
