@@ -42,7 +42,7 @@ deploy | info: Linphone SIP Client
   | + policy | label_suffix: linphonec -> right
   |          | period_ms: 46 | jitter_ms: 23 | record: mic_right | volume: 1.0
   |
-  + connect | + report | + parent
+  + connect | + report | + child report
 
 + child black_hole | pkg: black_hole
   + config

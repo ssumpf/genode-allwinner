@@ -13,7 +13,7 @@ deploy | info: command-line interface to the system
     + fs fonts          | + child fonts_fs
     + fs target         | + child default_fs_rw
     + fs config         | + parent | identity: config
-    + fs report         | + parent | identity: report
+    + fs report         | + child report
     + report clipboard  | + child clipboard
     + rom clipboard     | + child clipboard
     + rom vimrc         | + parent | label: config -> vimrc
