@@ -1,7 +1,7 @@
 usb:          pinephone
 platform:     pinephone
 leitzentrale: phone
-nitpicker:    phone
+gui:          phone
 fonts:        phone-720px
 event_filter: phone
 system:       phone

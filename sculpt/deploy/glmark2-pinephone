@@ -9,7 +9,7 @@ deploy
 
 + child glmark2 | pkg: glmark2
   + connect
-    + gui                 | + parent | label: focus
+    + gui                 | + child gui | label: focus
     + gpu                 | + child gpu
     + rom mesa_gpu.lib.so | + parent | label: mesa_gpu-lima.lib.so
 -

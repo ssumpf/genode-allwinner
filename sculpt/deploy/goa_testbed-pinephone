@@ -34,9 +34,9 @@ deploy | info: Goa testbed
     + nic tcp_terminal               | + child nic_router | label: telnet
     + nic lighttpd                   | + child nic_router | label: http
     + nic                            | + child nic_router | . for test scenario
-    + report | label_last: clipboard | + parent
-    + report | label_last: shape     | + parent
-    + rom    | label_last: clipboard | + parent
+    + report | label_last: clipboard | + child clipboard
+    + report | label_last: shape     | + child pointer
+    + rom    | label_last: clipboard | + child clipboard
     + rom platform_info              | + parent | label: platform_info
     + rom capslock                   | + parent | label: capslock
     + rom mesa_gpu.lib.so            | + parent | label: mesa_gpu-lima.lib.so

@@ -5,7 +5,7 @@ deploy | info: Linphone SIP Client
 + option managed
 
 + child linphone_loading_backdrop | pkg: ssumpf/pkg/linphone_loading_backdrop/2025-10-20
-  + connect | + gui | + parent | label: backdrop
+  + connect | + gui | + child gui | label: backdrop
 
 + child fonts_fs | pkg: fonts_fs
   + connect | + rom config | + parent | label: config -> fonts
@@ -53,8 +53,8 @@ deploy | info: Linphone SIP Client
 
 + child touch_keyboard | pkg: touch_keyboard
   + connect
-    + gui      | + parent | label: touch_keyboard
-    + event    | + parent | label: global
+    + gui      | + child gui
+    + event    | + child event_filter | label: global
     + fs fonts | + child fonts_fs
 
 + child mesa_gpu-lima | pkg: mesa_gpu-lima
@@ -65,8 +65,8 @@ deploy | info: Linphone SIP Client
 + child linphone_gui | pkg: ssumpf/pkg/linphone-simple/2025-10-20 | priority: -2
   + affinity | xpos: 1 | ypos: 0 | width: 1 | height: 1
   + connect
-    + gui QGenodeScreen   | + parent
-    + gui                 | + parent | label: focus
+    + gui QGenodeScreen   | + child gui
+    + gui                 | + child gui | label: focus
     + rm                  | + parent
     + gpu                 | + child gpu
     + rom mesa_gpu.lib.so | + child mesa_gpu-lima

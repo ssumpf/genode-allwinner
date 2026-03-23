@@ -14,7 +14,7 @@ deploy | info: GLMark2 OpenGL demo using the GPU
 + child glmark2 | pkg: glmark2
   + affinity | xpos: 1 | width: 1
   + connect
-    + gui                 | + parent
+    + gui                 | + child gui
     + gpu                 | + child gpu
     + rom mesa_gpu.lib.so | + child mesa_gpu-lima
 -

@@ -7,7 +7,7 @@ deploy | info: test-driving the front and rear cameras
 + child test-camera | pkg: test-camera-pinephone
   + affinity | xpos: 0 | width: 1
   + connect
-    + gui              | + parent         | label: camera
+    + gui              | + child gui      | label: camera
     + platform         | + child platform | label: camera
     + pin_state   PD3  | + child platform | label: camera -> PD3
     + pin_state   PE12 | + child platform | label: camera -> PE12

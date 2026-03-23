@@ -17,7 +17,7 @@ deploy | info: Video chat via Jitsi
   |       + ttf regular | path: /VeraMono.ttf | size_px: 10
   + connect
     + rom VeraMono.ttf | + parent
-    + gui              | + parent
+    + gui              | + child gui
 
 + child log | pkg: stdin2out
   + config
@@ -96,8 +96,8 @@ deploy | info: Video chat via Jitsi
 
 + child touch_keyboard | pkg: touch_keyboard
   + connect
-    + gui      | + parent | label: touch_keyboard
-    + event    | + parent | label: global
+    + gui      | + child gui
+    + event    | + child event_filter | label: global
     + fs fonts | + child fonts_fs
 
 + child mesa_gpu-lima | pkg: mesa_gpu-lima
@@ -136,11 +136,11 @@ deploy | info: Video chat via Jitsi
     + nic                 | + child nic_router
     + fs config           | + child jitsi_config_fs
     + fs downloads        | + child ram_fs
-    + gui QGenodeScreen   | + parent
-    + gui                 | + parent | label: focus
-    + report shape        | + parent | label: shape
-    + report clipboard    | + parent
-    + rom    clipboard    | + parent
+    + gui QGenodeScreen   | + child gui
+    + gui                 | + child gui     | label: focus
+    + report shape        | + child pointer | label: shape
+    + report clipboard    | + child clipboard
+    + rom    clipboard    | + child clipboard
     + rtc                 | + child sntp_dummy_rtc
     + play                | + child mixer
     + record              | + child mixer

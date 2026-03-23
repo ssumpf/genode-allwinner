@@ -59,6 +59,6 @@ deploy | info: oscilloscope for the microphone
   | + channel | label: mic_right | color: #cc7777 | v_pos: 0.75
   + connect
     + rom recording | + child record_rom
-    + gui           | + parent
+    + gui           | + child gui
     + rm            | + parent
 -

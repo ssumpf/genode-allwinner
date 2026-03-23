@@ -7,6 +7,6 @@ config
       + tap | key: KEY_DASHBOARD
             | xpos: 0 | ypos: 400 | width: 25 | height: 600
 
-+ policy | label_prefix: runtime -> platform -> | input: platform
-+ policy | label_prefix: runtime ->             | input: runtime
++ policy | label_prefix: platform -> | input: platform
++ default-policy                     | input: runtime
 -
