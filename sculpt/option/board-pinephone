@@ -7,18 +7,18 @@ option
     + pin_control
     + irq
   + connect
-    + rom config                  | + parent | label: config -> child/platform
-    + rom system                  | + parent | label: config -> system
+    + rom config                  | + child model  | label: child/platform
+    + rom system                  | + child model  | label: system
+    + rom audio.config            | + child model  | label: audio
+    + rom modem.config            | + child model  | label: modem
     + rom sleep_states            | + child report | label: acpi_support/sleep_states
     + report modem -> state       | + child report | label: modem -> state
     + report                      | + child report
+    + event                       | + child event_filter
     + rm                          | + parent
     + io_mem                      | + parent
     + io_port                     | + parent
     + irq                         | + parent
-    + event                       | + child event_filter
-    + rom audio.config            | + parent | label: config -> audio
-    + rom modem.config            | + parent | label: config -> modem
     + rom ld.lib.so               | + parent
     + rom a64_platform            | + parent
     + rom a64_pio                 | + parent
