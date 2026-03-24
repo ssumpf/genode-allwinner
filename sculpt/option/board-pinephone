@@ -7,7 +7,7 @@ option
     + pin_control
     + irq
   + connect
-    + rom config                  | + parent | label: config -> platform
+    + rom config                  | + parent | label: config -> child/platform
     + rom system                  | + parent | label: config -> system
     + rom sleep_states            | + child report | label: acpi_support/sleep_states
     + report modem -> state       | + child report | label: modem -> state
