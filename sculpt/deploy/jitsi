@@ -12,7 +12,7 @@ deploy | info: Video chat via Jitsi
   |   + color | index: 8 | value: #171c29
   | + vfs
   |   + rom VeraMono.ttf
-  |   + dir fonts
+  |   + dir font
   |     + dir monospace
   |       + ttf regular | path: /VeraMono.ttf | size_px: 10
   + connect
@@ -28,9 +28,6 @@ deploy | info: Video chat via Jitsi
   + connect
     + fs       | + parent | identity: report
     + Terminal | + child log_terminal
-
-+ child fonts_fs | pkg: fonts_fs
-  + connect | + rom config | + child model | label: fonts
 
 + child sntp_dummy_rtc | pkg: ssumpf/pkg/sntp_dummy_rtc/2025-10-27
   + connect | + nic | + child nic_router
@@ -96,9 +93,9 @@ deploy | info: Video chat via Jitsi
 
 + child touch_keyboard | pkg: touch_keyboard
   + connect
-    + gui      | + child gui
-    + event    | + child event_filter | label: global
-    + fs fonts | + child fonts_fs
+    + gui     | + child gui
+    + event   | + child event_filter | label: global
+    + fs font | + child font
 
 + child mesa_gpu-lima | pkg: mesa_gpu-lima
   + connect | + rm | + parent

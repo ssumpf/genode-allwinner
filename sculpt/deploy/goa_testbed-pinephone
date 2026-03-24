@@ -4,9 +4,6 @@ deploy | info: Goa testbed
 + option sculpt
 + option managed
 
-+ child fonts_fs | priority: -2 | pkg: fonts_fs
-  + connect | + rom config | + child model | label: fonts
-
 + child recall_fs | priority: -2 | pkg: recall_fs
   + connect | + fs | + child default_fs_rw
 

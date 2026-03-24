@@ -1,7 +1,7 @@
 drivers:      pinephone
 leitzentrale: phone
 nitpicker:    phone
-fonts:        phone-720px
+font:         phone-720px
 event_filter: phone
 build:        app/phone_manager server/nitpicker app/menu_view server/wm
 build:        driver/modem/pinephone driver/uart/ns16550

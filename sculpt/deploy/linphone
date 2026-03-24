@@ -7,9 +7,6 @@ deploy | info: Linphone SIP Client
 + child linphone_loading_backdrop | pkg: ssumpf/pkg/linphone_loading_backdrop/2025-10-20
   + connect | + gui | + child gui | label: backdrop
 
-+ child fonts_fs | pkg: fonts_fs
-  + connect | + rom config | + child model | label: fonts
-
 + child sntp_dummy_rtc | pkg: ssumpf/pkg/sntp_dummy_rtc/2025-10-27
   + connect | + nic | + child nic_router
 
@@ -53,9 +50,9 @@ deploy | info: Linphone SIP Client
 
 + child touch_keyboard | pkg: touch_keyboard
   + connect
-    + gui      | + child gui
-    + event    | + child event_filter | label: global
-    + fs fonts | + child fonts_fs
+    + gui     | + child gui
+    + event   | + child event_filter | label: global
+    + fs font | + child font
 
 + child mesa_gpu-lima | pkg: mesa_gpu-lima
   + connect | + rm | + parent

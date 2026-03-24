@@ -2,7 +2,7 @@ usb:          pinephone
 platform:     pinephone
 leitzentrale: phone
 gui:          phone
-fonts:        phone-720px
+font:         phone-720px
 event_filter: phone
 system:       phone
 build:        app/phone_manager app/menu_view
