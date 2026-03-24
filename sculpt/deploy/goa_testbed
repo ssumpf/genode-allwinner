@@ -3,7 +3,7 @@ deploy | info: Goa testbed
 + option managed
 
 + child fonts_fs | priority: -2 | pkg: fonts_fs
-  + connect | + rom config | + parent | label: config -> managed/fonts
+  + connect | + rom config | + parent | label: config -> fonts
 
 + child recall_fs | priority: -2 | pkg: recall_fs
   + connect | + fs | + child default_fs_rw

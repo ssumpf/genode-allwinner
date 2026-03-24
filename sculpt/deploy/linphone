@@ -6,7 +6,7 @@ deploy | info: Linphone SIP Client
   + connect | + gui | + parent | label: backdrop
 
 + child fonts_fs | pkg: fonts_fs
-  + connect | + rom config | + parent | label: config -> managed/fonts
+  + connect | + rom config | + parent | label: config -> fonts
 
 + child sntp_dummy_rtc | pkg: ssumpf/pkg/sntp_dummy_rtc/2025-10-27
   + connect | + nic | + child nic_router
