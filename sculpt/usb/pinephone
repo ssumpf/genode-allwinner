@@ -1,4 +1,4 @@
 config
-+ policy | label_prefix: usb_net
++ policy | label: mobile
   + device | vendor_id: 0x2c7c | product_id: 0x0125
 -

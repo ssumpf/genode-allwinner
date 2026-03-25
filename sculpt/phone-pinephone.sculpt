@@ -17,5 +17,6 @@ deploy:       empty
 presets:      empty nano3d system_shell gpu_test osci camera_test
 presets:      morph_browser jitsi goa_testbed linphone
 option:       screenshot report_dump system_clock-dummy
+option:       wifi mobile usb
 depot:        genodelabs cnuke alex-ab nfeske cproc chelmuth jschlatow
 depot:        ssumpf skalk

@@ -1,0 +1,13 @@
+option
++ child mobile | binary: usb_net | caps: 200 | ram: 20M
+  + config
+    .
+    . Only set for * Quectel EG-25g, setting the MAC-address doesn't work
+    . for all devices, so better stick to the defaults
+    .
+    + device | vendor_id: 0x2c7c | product_id: 0x0125 | mac: 02:00:00:00:01:05
+  + connect
+    + uplink | + child nic_router | label: mobile
+    + usb    | + child usb        | label: mobile
+    + report | + child report
+-
