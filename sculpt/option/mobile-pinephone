@@ -1,4 +1,5 @@
 option
+
 + child mobile | binary: usb_net | caps: 200 | ram: 20M
   + config
     .
@@ -7,7 +8,12 @@ option
     .
     + device | vendor_id: 0x2c7c | product_id: 0x0125 | mac: 02:00:00:00:01:05
   + connect
-    + uplink | + child nic_router | label: mobile
-    + usb    | + child usb        | label: mobile
-    + report | + child report
+    + uplink   | + child nic_router | label: mobile
+    + usb      | + child usb        | label: mobile
+    + report   | + child report
+    + terminal | + child modem_diag
+
++ child modem_diag | binary: log_terminal | caps: 100 | ram: 1M
+  + provides | + terminal
+  + config
 -
