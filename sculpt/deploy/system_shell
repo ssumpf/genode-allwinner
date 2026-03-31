@@ -9,7 +9,7 @@ deploy | info: command-line interface to the system
     + gui               | + child gui | label: focus
     + fs font           | + child font
     + fs target         | + child default_fs_rw
-    + fs model          | + child model
+    + fs model          | + child model | identity: rw
     + fs report         | + child report
     + report clipboard  | + child clipboard
     + rom clipboard     | + child clipboard
