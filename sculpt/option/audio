@@ -5,5 +5,5 @@ option
   + connect
     + play     | + child mixer
     + record   | + child mixer
-    + platform | + parent | label: audio
+    + platform | + child platform | label: audio
 -
