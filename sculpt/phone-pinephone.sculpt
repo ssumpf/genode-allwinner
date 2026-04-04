@@ -4,6 +4,7 @@ leitzentrale: phone
 gui:          phone
 font:         phone-720px
 event_filter: phone
+runtime_view: phone
 system:       phone
 build:        app/phone_manager app/menu_view
 build:        driver/modem/pinephone driver/uart/ns16550 driver/platform/a64
