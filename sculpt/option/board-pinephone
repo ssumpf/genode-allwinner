@@ -30,4 +30,38 @@ option
     + rom pinephone_button        | + parent
     + rom platform_info           | + parent
     + rom devices                 | + parent
+
++ child fb | binary: de_fb | ram: 20M | caps: 250 | priority: -2
+  + connect
+    + platform         | + child platform | label: fb
+    + pin_control PH10 | + child platform | label: backlight
+    + pin_control PD23 | + child platform | label: lcd-reset
+    + capture          | + child gui
+    + report           | + child report
+    + rom config       | + child model    | label: fb
+    + rom dtb          | + parent         | label: de-pinephone.dtb
+    + rm               | + parent
+
++ child touch | binary: goodix_touch | ram: 10M | caps: 250 | priority: -2
+  + config
+  + connect
+    + platform         | + child platform     | label: touch
+    + rom dtb          | + parent             | label: goodix-pinephone.dtb
+    + pin_control PH4  | + child platform     | label: touch-int
+    + pin_control PH11 | + child platform     | label: touch-reset
+    + irq              | + child platform     | label: touch-int
+    + event            | + child event_filter | label: touch
+
++ child mmc | binary: a64_sd_card | ram: 16M | caps: 500 | priority: -3
+  + provides | + block
+  + config | report: yes
+    + policy | label: mmcblk0 | device: mmcblk0 | writeable: yes
+    + policy | label: mmcblk1 | device: mmcblk1 | writeable: yes
+    + policy | label: mmcblk2 | device: mmcblk2 | writeable: yes
+    + policy | label: mmcblk3 | device: mmcblk3 | writeable: yes
+  + connect
+    + platform   | + child platform | label: mmc
+    + rom dtb    | + parent         | label: sd_card-pinephone.dtb
+    + rom system | + child model    | label: system
+    + report     | + child report
 -
