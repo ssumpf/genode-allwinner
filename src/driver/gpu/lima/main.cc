@@ -1650,7 +1650,7 @@ struct Gpu::Session_component : public Genode::Session_object<Gpu::Session>
 				try {
 					new (_heap) Vram_local(_vram_local_space, cap, id);
 				} catch (...) {
-					throw Gpu::Session::Out_of_ram();
+					throw Out_of_ram();
 				}
 
 			if (_vram_local_space.lookup_import(id).valid())
